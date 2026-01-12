@@ -8,6 +8,7 @@ import type { DatePickerProps } from "./types";
 export function DatePicker({
   value,
   onChange,
+  onCommit,
   minDate,
   maxDate,
   placeholder = "When",
@@ -25,15 +26,27 @@ export function DatePicker({
     inputRef.current?.focus();
   }, []);
 
+  // Called on keyboard navigation - updates selection but doesn't commit
+  const handleDateChange = useCallback(
+    (date: Date) => {
+      const normalized = normalizeDate(date);
+      setSelectedDate(normalized);
+      onChange(normalized);
+    },
+    [onChange]
+  );
+
+  // Called on explicit selection (click or Enter) - commits the selection
   const handleDateSelect = useCallback(
     (date: Date) => {
       const normalized = normalizeDate(date);
       setSelectedDate(normalized);
       onChange(normalized);
+      onCommit?.(normalized);
       setQuery(""); // Clear search after selection
       inputRef.current?.focus();
     },
-    [onChange]
+    [onChange, onCommit]
   );
 
   const handleInputChange = useCallback(
@@ -87,7 +100,7 @@ export function DatePicker({
     : `date-${format(selectedDate, "yyyy-MM-dd")}`;
 
   return (
-    <div className="w-[280px] rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
+    <div className="w-full min-w-[260px] max-w-[340px] mx-auto rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
       {/* Screen reader instructions */}
       <div id="datepicker-instructions" className="sr-only">
         Use arrow keys to navigate dates, Enter to select, or type to search
@@ -149,6 +162,7 @@ export function DatePicker({
           selectedDate={selectedDate}
           minDate={minDate}
           maxDate={maxDate}
+          onDateChange={handleDateChange}
           onDateSelect={handleDateSelect}
         />
       )}

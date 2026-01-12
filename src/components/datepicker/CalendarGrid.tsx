@@ -22,6 +22,7 @@ interface CalendarGridProps {
   selectedDate: Date;
   minDate?: Date;
   maxDate?: Date;
+  onDateChange: (date: Date) => void;
   onDateSelect: (date: Date) => void;
 }
 
@@ -33,6 +34,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   selectedDate,
   minDate,
   maxDate,
+  onDateChange,
   onDateSelect,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -191,7 +193,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     // Don't navigate to disabled dates
     if (isDateDisabled(newDate, minDate, maxDate)) return;
 
-    onDateSelect(newDate);
+    onDateChange(newDate);
 
     // Only scroll if the new date would be off-screen
     const weekIndex = dateToWeekIndex(newDate);
@@ -204,7 +206,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     setTimeout(() => {
       isKeyboardNavigatingRef.current = false;
     }, 300);
-  }, [selectedDate, minDate, maxDate, onDateSelect, scrollToWeekIfNeeded]);
+  }, [selectedDate, minDate, maxDate, onDateChange, scrollToWeekIfNeeded]);
 
   // Expose navigate method via ref
   useImperativeHandle(ref, () => ({

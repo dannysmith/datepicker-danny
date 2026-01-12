@@ -83,7 +83,6 @@ export function App() {
   const [popoverDate1, setPopoverDate1] = useState<Date>(new Date());
   const [popoverDate2, setPopoverDate2] = useState<Date>(new Date());
   const [popoverDate3, setPopoverDate3] = useState<Date>(new Date());
-  const [htmlPopoverDate, setHtmlPopoverDate] = useState<Date>(new Date());
   const [wideDate, setWideDate] = useState<Date>(new Date());
   const [narrowDate, setNarrowDate] = useState<Date>(new Date());
   const [tinyDate, setTinyDate] = useState<Date>(new Date());
@@ -91,6 +90,11 @@ export function App() {
   const [pastOnlyDate, setPastOnlyDate] = useState<Date>(new Date());
   const [weekWindowDate, setWeekWindowDate] = useState<Date>(new Date());
   const [formDate, setFormDate] = useState<Date>(new Date());
+
+  // Popover open states
+  const [popover1Open, setPopover1Open] = useState(false);
+  const [popover2Open, setPopover2Open] = useState(false);
+  const [popover3Open, setPopover3Open] = useState(false);
 
   // Date constraints
   const today = new Date();
@@ -118,10 +122,10 @@ export function App() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* shadcn Popover - Large */}
             <DemoCard
-              label="Large Popover"
-              description="Spacious popover with padding"
+              label="Large Popover (380px)"
+              description="Picker centered with space around"
             >
-              <Popover>
+              <Popover open={popover1Open} onOpenChange={setPopover1Open}>
                 <PopoverTrigger
                   render={
                     <Button variant="outline" className="w-full justify-start gap-2">
@@ -130,10 +134,11 @@ export function App() {
                     </Button>
                   }
                 />
-                <PopoverContent className="w-[380px] p-6">
+                <PopoverContent className="w-[380px]">
                   <DatePicker
                     value={popoverDate1}
                     onChange={setPopoverDate1}
+                    onCommit={() => setPopover1Open(false)}
                     placeholder="Select date"
                   />
                 </PopoverContent>
@@ -142,10 +147,10 @@ export function App() {
 
             {/* shadcn Popover - Medium */}
             <DemoCard
-              label="Medium Popover"
-              description="Standard size, minimal padding"
+              label="Medium Popover (340px)"
+              description="Picker fills container exactly"
             >
-              <Popover>
+              <Popover open={popover2Open} onOpenChange={setPopover2Open}>
                 <PopoverTrigger
                   render={
                     <Button variant="outline" className="w-full justify-start gap-2">
@@ -154,10 +159,11 @@ export function App() {
                     </Button>
                   }
                 />
-                <PopoverContent className="w-[340px] p-3">
+                <PopoverContent className="w-[340px]">
                   <DatePicker
                     value={popoverDate2}
                     onChange={setPopoverDate2}
+                    onCommit={() => setPopover2Open(false)}
                     placeholder="Select date"
                   />
                 </PopoverContent>
@@ -166,10 +172,10 @@ export function App() {
 
             {/* shadcn Popover - Small/Tight */}
             <DemoCard
-              label="Small Popover"
-              description="Minimal width, tight fit"
+              label="Small Popover (290px)"
+              description="Picker fills narrow container"
             >
-              <Popover>
+              <Popover open={popover3Open} onOpenChange={setPopover3Open}>
                 <PopoverTrigger
                   render={
                     <Button variant="outline" className="w-full justify-start gap-2">
@@ -178,42 +184,17 @@ export function App() {
                     </Button>
                   }
                 />
-                <PopoverContent className="w-[290px] p-2">
+                <PopoverContent className="w-[290px]">
                   <DatePicker
                     value={popoverDate3}
                     onChange={setPopoverDate3}
+                    onCommit={() => setPopover3Open(false)}
                     placeholder="Select date"
                   />
                 </PopoverContent>
               </Popover>
             </DemoCard>
 
-            {/* Native HTML Popover */}
-            <DemoCard
-              label="Native HTML Popover"
-              description="Using popover attribute (no JS positioning)"
-            >
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2"
-                // @ts-expect-error - popoverTarget is valid but not in types yet
-                popoverTarget="html-popover-demo"
-              >
-                <CalendarIcon className="size-4 text-zinc-400" />
-                <span>{format(htmlPopoverDate, "PPP")}</span>
-              </Button>
-              <div
-                id="html-popover-demo"
-                popover="auto"
-                className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 shadow-xl backdrop:bg-black/50"
-              >
-                <DatePicker
-                  value={htmlPopoverDate}
-                  onChange={setHtmlPopoverDate}
-                  placeholder="Select date"
-                />
-              </div>
-            </DemoCard>
           </div>
         </Section>
 
@@ -228,7 +209,7 @@ export function App() {
               label="Wide Container (500px)"
               description="Extra horizontal space"
             >
-              <div className="w-[500px] rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+              <div className="w-[500px]">
                 <DatePicker
                   value={wideDate}
                   onChange={setWideDate}
@@ -242,7 +223,7 @@ export function App() {
               label="Standard Container (340px)"
               description="Default recommended width"
             >
-              <div className="w-[340px] rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+              <div className="w-[340px]">
                 <DatePicker
                   value={basicDate}
                   onChange={setBasicDate}
@@ -256,7 +237,7 @@ export function App() {
               label="Narrow Container (300px)"
               description="Tighter fit"
             >
-              <div className="w-[300px] rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+              <div className="w-[300px]">
                 <DatePicker
                   value={narrowDate}
                   onChange={setNarrowDate}
@@ -270,7 +251,7 @@ export function App() {
               label="Minimum Container (260px)"
               description="Testing the limits"
             >
-              <div className="w-[260px] rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
+              <div className="w-[260px]">
                 <DatePicker
                   value={tinyDate}
                   onChange={setTinyDate}
@@ -292,14 +273,12 @@ export function App() {
               label="Future Dates Only"
               description={`From ${format(today, "MMM d")} onwards`}
             >
-              <div className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
-                <DatePicker
-                  value={futureOnlyDate}
-                  onChange={setFutureOnlyDate}
-                  minDate={today}
-                  placeholder="Select future date"
-                />
-              </div>
+              <DatePicker
+                value={futureOnlyDate}
+                onChange={setFutureOnlyDate}
+                minDate={today}
+                placeholder="Select future date"
+              />
             </DemoCard>
 
             {/* Past only */}
@@ -307,14 +286,12 @@ export function App() {
               label="Past Dates Only"
               description={`Up to ${format(today, "MMM d")}`}
             >
-              <div className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
-                <DatePicker
-                  value={pastOnlyDate}
-                  onChange={setPastOnlyDate}
-                  maxDate={today}
-                  placeholder="Select past date"
-                />
-              </div>
+              <DatePicker
+                value={pastOnlyDate}
+                onChange={setPastOnlyDate}
+                maxDate={today}
+                placeholder="Select past date"
+              />
             </DemoCard>
 
             {/* Narrow window */}
@@ -322,15 +299,13 @@ export function App() {
               label="7-Day Window"
               description={`${format(today, "MMM d")} - ${format(weekFromNow, "MMM d")}`}
             >
-              <div className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 p-4">
-                <DatePicker
-                  value={weekWindowDate}
-                  onChange={setWeekWindowDate}
-                  minDate={today}
-                  maxDate={weekFromNow}
-                  placeholder="Select within window"
-                />
-              </div>
+              <DatePicker
+                value={weekWindowDate}
+                onChange={setWeekWindowDate}
+                minDate={today}
+                maxDate={weekFromNow}
+                placeholder="Select within window"
+              />
             </DemoCard>
           </div>
         </Section>
@@ -399,16 +374,12 @@ export function App() {
               "Start date",
               "Departure",
             ].map((placeholder) => (
-              <div
+              <DatePicker
                 key={placeholder}
-                className="rounded-lg border border-zinc-800 bg-zinc-900/50 p-4"
-              >
-                <DatePicker
-                  value={new Date()}
-                  onChange={() => {}}
-                  placeholder={placeholder}
-                />
-              </div>
+                value={new Date()}
+                onChange={() => {}}
+                placeholder={placeholder}
+              />
             ))}
           </div>
         </Section>
