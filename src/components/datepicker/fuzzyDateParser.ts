@@ -95,6 +95,28 @@ export function expandPartialInput(input: string): string[] {
     }
   }
 
+  // Pattern 7: Shorthand with +/- prefix ("+2d", "-3w", "+1m", "2m")
+  // Note: chrono interprets "m" as minutes, so we expand to full unit names
+  const shorthandMatch = lower.match(/^([+-]?)(\d+)([dwmy])$/);
+  if (shorthandMatch) {
+    const [, sign, num, unitLetter] = shorthandMatch;
+    const unitMap: Record<string, string> = {
+      d: "days",
+      w: "weeks",
+      m: "months",
+      y: "years",
+    };
+    const unit = unitMap[unitLetter];
+    if (unit) {
+      if (sign === "-") {
+        candidates.push(`${num} ${unit} ago`);
+      } else {
+        candidates.push(`in ${num} ${unit}`);
+        candidates.push(`${num} ${unit}`);
+      }
+    }
+  }
+
   return [...new Set(candidates)]; // Dedupe
 }
 
