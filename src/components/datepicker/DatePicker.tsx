@@ -41,12 +41,24 @@ export function DatePicker({
 
   const handleInputKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      // If no query and arrow keys, let calendar handle it
-      if (!query && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-        e.preventDefault();
-        // Forward to calendar
-        calendarRef.current?.focus();
-        return;
+      // If no query, handle navigation keys
+      if (!query) {
+        const keyToDirection: Record<string, 'up' | 'down' | 'left' | 'right' | 'pageUp' | 'pageDown' | 'home'> = {
+          ArrowUp: 'up',
+          ArrowDown: 'down',
+          ArrowLeft: 'left',
+          ArrowRight: 'right',
+          PageUp: 'pageUp',
+          PageDown: 'pageDown',
+          Home: 'home',
+        };
+
+        const direction = keyToDirection[e.key];
+        if (direction) {
+          e.preventDefault();
+          calendarRef.current?.navigate(direction);
+          return;
+        }
       }
 
       // Escape clears query or does nothing

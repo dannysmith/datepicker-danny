@@ -21,7 +21,7 @@ interface CalendarGridProps {
 }
 
 export interface CalendarGridHandle {
-  focus: () => void;
+  navigate: (direction: 'up' | 'down' | 'left' | 'right' | 'pageUp' | 'pageDown' | 'home') => void;
 }
 
 export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(function CalendarGrid({
@@ -29,7 +29,6 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   onDateSelect,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState("");
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -60,11 +59,6 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     overscan: 10,
     initialOffset: initialWeekIndex * WEEK_HEIGHT,
   });
-
-  // Expose focus method via ref
-  useImperativeHandle(ref, () => ({
-    focus: () => gridRef.current?.focus(),
-  }), []);
 
   // Trigger re-render after delay to show the month label
   useEffect(() => {
@@ -153,64 +147,56 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     }
   }, [isWeekVisible, rowVirtualizer]);
 
-  // Keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      let newDate: Date | null = null;
+  // Navigate selection by direction
+  const navigate = useCallback((direction: 'up' | 'down' | 'left' | 'right' | 'pageUp' | 'pageDown' | 'home') => {
+    let newDate: Date;
 
-      switch (e.key) {
-        case "ArrowUp":
-          newDate = addDays(selectedDate, -7);
-          break;
-        case "ArrowDown":
-          newDate = addDays(selectedDate, 7);
-          break;
-        case "ArrowLeft":
-          newDate = addDays(selectedDate, -1);
-          break;
-        case "ArrowRight":
-          newDate = addDays(selectedDate, 1);
-          break;
-        case "PageUp":
-          newDate = addWeeks(selectedDate, -4);
-          break;
-        case "PageDown":
-          newDate = addWeeks(selectedDate, 4);
-          break;
-        case "Home":
-          newDate = new Date();
-          break;
-        default:
-          return;
-      }
+    switch (direction) {
+      case 'up':
+        newDate = addDays(selectedDate, -7);
+        break;
+      case 'down':
+        newDate = addDays(selectedDate, 7);
+        break;
+      case 'left':
+        newDate = addDays(selectedDate, -1);
+        break;
+      case 'right':
+        newDate = addDays(selectedDate, 1);
+        break;
+      case 'pageUp':
+        newDate = addWeeks(selectedDate, -4);
+        break;
+      case 'pageDown':
+        newDate = addWeeks(selectedDate, 4);
+        break;
+      case 'home':
+        newDate = new Date();
+        break;
+    }
 
-      if (newDate) {
-        e.preventDefault();
-        onDateSelect(newDate);
+    onDateSelect(newDate);
 
-        // Only scroll if the new date would be off-screen
-        const weekIndex = dateToWeekIndex(newDate);
+    // Only scroll if the new date would be off-screen
+    const weekIndex = dateToWeekIndex(newDate);
 
-        // Flag keyboard navigation to suppress overlay/dimming
-        isKeyboardNavigatingRef.current = true;
-        scrollToWeekIfNeeded(weekIndex);
+    // Flag keyboard navigation to suppress overlay/dimming
+    isKeyboardNavigatingRef.current = true;
+    scrollToWeekIfNeeded(weekIndex);
 
-        // Clear flag after scroll completes
-        setTimeout(() => {
-          isKeyboardNavigatingRef.current = false;
-        }, 300);
-      }
-    },
-    [selectedDate, onDateSelect, scrollToWeekIfNeeded]
-  );
+    // Clear flag after scroll completes
+    setTimeout(() => {
+      isKeyboardNavigatingRef.current = false;
+    }, 300);
+  }, [selectedDate, onDateSelect, scrollToWeekIfNeeded]);
+
+  // Expose navigate method via ref
+  useImperativeHandle(ref, () => ({
+    navigate,
+  }), [navigate]);
 
   return (
-    <div
-      ref={gridRef}
-      className="flex flex-col outline-none"
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-    >
+    <div className="flex flex-col">
       {/* Day of week headers */}
       <div className="grid grid-cols-7 gap-0.5 border-b border-zinc-800 pb-2">
         {WEEKDAY_HEADERS.map((day) => (
