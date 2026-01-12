@@ -18,8 +18,9 @@ export function DateCell({
   showSelectedMonthLabel,
   onClick,
 }: DateCellProps) {
-  // Show month label on first of month, OR on selected if enough time has passed
-  const showMonthLabel = isFirstOfMonth || (isSelected && showSelectedMonthLabel);
+  // Month label is visible if: first of month, OR selected and delay has passed
+  const monthLabelVisible =
+    isFirstOfMonth || (isSelected && showSelectedMonthLabel);
 
   return (
     <button
@@ -28,30 +29,23 @@ export function DateCell({
       onClick={() => onClick(date)}
       className={cn(
         "relative flex h-full w-full flex-col items-center justify-center",
-        "rounded-md transition-colors outline-none",
+        "rounded-md outline-none",
         isSelected && "bg-blue-600 text-white",
         !isSelected && isToday && "text-blue-500 font-medium",
         !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50"
       )}
     >
-      {showMonthLabel && (
-        <span
-          className={cn(
-            "text-[10px] leading-none",
-            isSelected ? "text-blue-200" : "text-zinc-500"
-          )}
-        >
-          {formatMonthAbbr(date)}
-        </span>
-      )}
+      {/* Always render month label span - use opacity to show/hide */}
       <span
         className={cn(
-          "text-sm leading-none",
-          showMonthLabel ? "mt-0.5" : ""
+          "h-3 text-[10px] leading-none transition-opacity duration-200",
+          isSelected ? "text-blue-200" : "text-zinc-500",
+          monthLabelVisible ? "opacity-100" : "opacity-0"
         )}
       >
-        {formatDayNumber(date)}
+        {formatMonthAbbr(date)}
       </span>
+      <span className="text-sm leading-none">{formatDayNumber(date)}</span>
     </button>
   );
 }

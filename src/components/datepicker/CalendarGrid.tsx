@@ -28,10 +28,23 @@ export function CalendarGrid({
   const gridRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState("");
-  const [showSelectedMonthLabel, setShowSelectedMonthLabel] = useState(true);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const monthLabelTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialScrollDone = useRef(false);
+
+  // Track selection timing with refs for synchronous updates during render
+  const prevSelectedDateRef = useRef<number>(selectedDate.getTime());
+  const selectionChangedAtRef = useRef<number>(Date.now() - MONTH_LABEL_DELAY); // Start as "stable"
+  const [, forceUpdate] = useState(0);
+
+  // Synchronously detect selection change during render
+  const selectedDateTime = selectedDate.getTime();
+  if (selectedDateTime !== prevSelectedDateRef.current) {
+    prevSelectedDateRef.current = selectedDateTime;
+    selectionChangedAtRef.current = Date.now();
+  }
+
+  // Derive showSelectedMonthLabel from timing (synchronous, no lag)
+  const showSelectedMonthLabel = Date.now() - selectionChangedAtRef.current >= MONTH_LABEL_DELAY;
 
   const initialWeekIndex = getInitialWeekIndex(selectedDate);
 
@@ -48,26 +61,13 @@ export function CalendarGrid({
     gridRef.current?.focus();
   }, []);
 
-  // Handle delayed month label on selected date
+  // Trigger re-render after delay to show the month label
   useEffect(() => {
-    // Hide month label immediately when selection changes
-    setShowSelectedMonthLabel(false);
-
-    // Clear any existing timeout
-    if (monthLabelTimeoutRef.current) {
-      clearTimeout(monthLabelTimeoutRef.current);
-    }
-
-    // Show month label after delay
-    monthLabelTimeoutRef.current = setTimeout(() => {
-      setShowSelectedMonthLabel(true);
+    const timeout = setTimeout(() => {
+      forceUpdate((n) => n + 1);
     }, MONTH_LABEL_DELAY);
 
-    return () => {
-      if (monthLabelTimeoutRef.current) {
-        clearTimeout(monthLabelTimeoutRef.current);
-      }
-    };
+    return () => clearTimeout(timeout);
   }, [selectedDate]);
 
   // Update visible month based on scroll position
@@ -123,6 +123,28 @@ export function CalendarGrid({
     }
   }, [selectedDate, rowVirtualizer]);
 
+  // Check if a week index is currently visible in the viewport
+  const isWeekVisible = useCallback((weekIndex: number): boolean => {
+    const container = containerRef.current;
+    if (!container) return false;
+
+    const scrollTop = container.scrollTop;
+    const viewportHeight = container.clientHeight;
+    const weekTop = weekIndex * WEEK_HEIGHT;
+    const weekBottom = weekTop + WEEK_HEIGHT;
+
+    // Add a small margin so we scroll before it's right at the edge
+    const margin = WEEK_HEIGHT * 0.5;
+    return weekTop >= scrollTop + margin && weekBottom <= scrollTop + viewportHeight - margin;
+  }, []);
+
+  // Scroll to a week index only if needed
+  const scrollToWeekIfNeeded = useCallback((weekIndex: number) => {
+    if (!isWeekVisible(weekIndex)) {
+      rowVirtualizer.scrollToIndex(weekIndex, { align: "center" });
+    }
+  }, [isWeekVisible, rowVirtualizer]);
+
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -158,12 +180,12 @@ export function CalendarGrid({
         e.preventDefault();
         onDateSelect(newDate);
 
-        // Scroll to make the new date visible
+        // Only scroll if the new date would be off-screen
         const weekIndex = dateToWeekIndex(newDate);
-        rowVirtualizer.scrollToIndex(weekIndex, { align: "center", behavior: "smooth" });
+        scrollToWeekIfNeeded(weekIndex);
       }
     },
-    [selectedDate, onDateSelect, rowVirtualizer]
+    [selectedDate, onDateSelect, scrollToWeekIfNeeded]
   );
 
   return (
@@ -189,7 +211,7 @@ export function CalendarGrid({
       <div className="relative">
         <div
           ref={containerRef}
-          className="h-[308px] overflow-auto"
+          className="h-[308px] overflow-auto scroll-smooth"
           style={{ scrollbarWidth: "none" }}
         >
           <div
