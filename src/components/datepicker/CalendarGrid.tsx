@@ -17,7 +17,7 @@ import { addDays, addWeeks, format } from "date-fns";
 
 const ROW_HEIGHT_EM = 2.6; // row height in em units
 const DEFAULT_ROW_HEIGHT = 36; // fallback pixels (14px font * 2.6)
-const MONTH_LABEL_DELAY = 150; // ms before showing month on selected date
+const MONTH_LABEL_DELAY = 20; // ms before showing month on selected date
 
 interface CalendarGridProps {
   selectedDate: Date;
