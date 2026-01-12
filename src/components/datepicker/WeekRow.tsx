@@ -1,19 +1,23 @@
 import { DateCell } from "./DateCell";
-import { getWeekDays, areSameDay, isFirstOfMonth, getToday } from "./utils";
+import { getWeekDays, areSameDay, isFirstOfMonth, isDateDisabled } from "./utils";
 
 interface WeekRowProps {
   weekIndex: number;
   selectedDate: Date;
+  today: Date;
+  minDate?: Date;
+  maxDate?: Date;
   showSelectedMonthLabel: boolean;
   isScrolling: boolean;
   onDateSelect: (date: Date) => void;
 }
 
-const today = getToday();
-
 export function WeekRow({
   weekIndex,
   selectedDate,
+  today,
+  minDate,
+  maxDate,
   showSelectedMonthLabel,
   isScrolling,
   onDateSelect,
@@ -29,6 +33,7 @@ export function WeekRow({
           isSelected={areSameDay(date, selectedDate)}
           isToday={areSameDay(date, today)}
           isFirstOfMonth={isFirstOfMonth(date)}
+          isDisabled={isDateDisabled(date, minDate, maxDate)}
           showSelectedMonthLabel={showSelectedMonthLabel}
           isDimmed={isScrolling}
           onClick={onDateSelect}

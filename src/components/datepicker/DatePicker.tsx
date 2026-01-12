@@ -7,6 +7,8 @@ import type { DatePickerProps } from "./types";
 export function DatePicker({
   value,
   onChange,
+  minDate,
+  maxDate,
   placeholder = "When",
 }: DatePickerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
@@ -118,12 +120,16 @@ export function DatePicker({
       {isSearchMode ? (
         <FuzzySearchResults
           query={query}
+          minDate={minDate}
+          maxDate={maxDate}
           onDateSelect={handleDateSelect}
         />
       ) : (
         <CalendarGrid
           ref={calendarRef}
           selectedDate={selectedDate}
+          minDate={minDate}
+          maxDate={maxDate}
           onDateSelect={handleDateSelect}
         />
       )}

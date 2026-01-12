@@ -9,9 +9,12 @@ import {
   differenceInDays,
   startOfDay,
 } from "date-fns";
+import { isDateDisabled } from "./utils";
 
 interface FuzzySearchResultsProps {
   query: string;
+  minDate?: Date;
+  maxDate?: Date;
   onDateSelect: (date: Date) => void;
 }
 
@@ -96,15 +99,32 @@ function parseInput(text: string): ParsedResult[] {
 
 export function FuzzySearchResults({
   query,
+  minDate,
+  maxDate,
   onDateSelect,
 }: FuzzySearchResultsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const results = useMemo(() => parseInput(query), [query]);
 
-  // Reset selection when results change
+  // Find next/prev enabled index for keyboard navigation
+  const findNextEnabledIndex = (current: number, direction: 1 | -1): number => {
+    let next = current + direction;
+    while (next >= 0 && next < results.length) {
+      if (!isDateDisabled(results[next].date, minDate, maxDate)) {
+        return next;
+      }
+      next += direction;
+    }
+    return current; // Stay at current if no enabled found
+  };
+
+  // Reset selection to first enabled result when results change
   useEffect(() => {
-    setSelectedIndex(0);
-  }, [results]);
+    const firstEnabled = results.findIndex(
+      (r) => !isDateDisabled(r.date, minDate, maxDate)
+    );
+    setSelectedIndex(firstEnabled >= 0 ? firstEnabled : 0);
+  }, [results, minDate, maxDate]);
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -112,15 +132,15 @@ export function FuzzySearchResults({
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
-          setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
+          setSelectedIndex((i) => findNextEnabledIndex(i, 1));
           break;
         case "ArrowUp":
           e.preventDefault();
-          setSelectedIndex((i) => Math.max(i - 1, 0));
+          setSelectedIndex((i) => findNextEnabledIndex(i, -1));
           break;
         case "Enter":
           e.preventDefault();
-          if (results[selectedIndex]) {
+          if (results[selectedIndex] && !isDateDisabled(results[selectedIndex].date, minDate, maxDate)) {
             onDateSelect(results[selectedIndex].date);
           }
           break;
@@ -129,7 +149,7 @@ export function FuzzySearchResults({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [results, selectedIndex, onDateSelect]);
+  }, [results, selectedIndex, minDate, maxDate, onDateSelect]);
 
   if (results.length === 0) {
     return (
@@ -141,36 +161,40 @@ export function FuzzySearchResults({
 
   return (
     <div className="flex flex-col">
-      {results.map((result, index) => (
-        <button
-          key={result.date.getTime()}
-          type="button"
-          onClick={() => onDateSelect(result.date)}
-          className={cn(
-            "flex items-center justify-between px-3 py-2 text-sm",
-            "rounded-md transition-colors",
-            index === selectedIndex
-              ? "bg-blue-600 text-white"
-              : "text-zinc-300 hover:bg-zinc-800"
-          )}
-        >
-          <span>{result.label}</span>
-          <span
+      {results.map((result, index) => {
+        const disabled = isDateDisabled(result.date, minDate, maxDate);
+        return (
+          <button
+            key={result.date.getTime()}
+            type="button"
+            disabled={disabled}
+            onClick={() => !disabled && onDateSelect(result.date)}
             className={cn(
-              "text-xs",
-              index === selectedIndex ? "text-blue-200" : "text-zinc-500"
+              "flex items-center justify-between px-3 py-2 text-sm",
+              "rounded-md transition-colors",
+              disabled && "cursor-not-allowed text-zinc-600",
+              !disabled && index === selectedIndex && "bg-blue-600 text-white",
+              !disabled && index !== selectedIndex && "text-zinc-300 hover:bg-zinc-800"
             )}
           >
-            {isToday(result.date)
-              ? format(result.date, "d MMM")
-              : result.relativeText === "today" ||
-                  result.relativeText === "tomorrow" ||
-                  result.relativeText === "yesterday"
+            <span>{result.label}</span>
+            <span
+              className={cn(
+                "text-xs",
+                disabled ? "text-zinc-700" : index === selectedIndex ? "text-blue-200" : "text-zinc-500"
+              )}
+            >
+              {isToday(result.date)
                 ? format(result.date, "d MMM")
-                : result.relativeText}
-          </span>
-        </button>
-      ))}
+                : result.relativeText === "today" ||
+                    result.relativeText === "tomorrow" ||
+                    result.relativeText === "yesterday"
+                  ? format(result.date, "d MMM")
+                  : result.relativeText}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -8,6 +8,8 @@ import {
   weekIndexToDate,
   dateToWeekIndex,
   formatMonthFull,
+  getToday,
+  isDateDisabled,
   WEEKDAY_HEADERS,
 } from "./utils";
 import { addDays, addWeeks } from "date-fns";
@@ -17,6 +19,8 @@ const MONTH_LABEL_DELAY = 150; // ms before showing month on selected date
 
 interface CalendarGridProps {
   selectedDate: Date;
+  minDate?: Date;
+  maxDate?: Date;
   onDateSelect: (date: Date) => void;
 }
 
@@ -26,9 +30,12 @@ export interface CalendarGridHandle {
 
 export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(function CalendarGrid({
   selectedDate,
+  minDate,
+  maxDate,
   onDateSelect,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const today = getToday();
   const [isScrolling, setIsScrolling] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState("");
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -175,6 +182,9 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
         break;
     }
 
+    // Don't navigate to disabled dates
+    if (isDateDisabled(newDate, minDate, maxDate)) return;
+
     onDateSelect(newDate);
 
     // Only scroll if the new date would be off-screen
@@ -188,7 +198,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     setTimeout(() => {
       isKeyboardNavigatingRef.current = false;
     }, 300);
-  }, [selectedDate, onDateSelect, scrollToWeekIfNeeded]);
+  }, [selectedDate, minDate, maxDate, onDateSelect, scrollToWeekIfNeeded]);
 
   // Expose navigate method via ref
   useImperativeHandle(ref, () => ({
@@ -238,6 +248,9 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
                 <WeekRow
                   weekIndex={virtualWeek.index}
                   selectedDate={selectedDate}
+                  today={today}
+                  minDate={minDate}
+                  maxDate={maxDate}
                   showSelectedMonthLabel={showSelectedMonthLabel}
                   isScrolling={isScrolling}
                   onDateSelect={onDateSelect}

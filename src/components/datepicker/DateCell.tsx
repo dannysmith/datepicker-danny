@@ -6,6 +6,7 @@ interface DateCellProps {
   isSelected: boolean;
   isToday: boolean;
   isFirstOfMonth: boolean;
+  isDisabled: boolean;
   showSelectedMonthLabel: boolean;
   isDimmed: boolean;
   onClick: (date: Date) => void;
@@ -16,6 +17,7 @@ export function DateCell({
   isSelected,
   isToday,
   isFirstOfMonth,
+  isDisabled,
   showSelectedMonthLabel,
   isDimmed,
   onClick,
@@ -28,21 +30,23 @@ export function DateCell({
     <button
       type="button"
       tabIndex={-1}
-      onClick={() => onClick(date)}
+      disabled={isDisabled}
+      onClick={() => !isDisabled && onClick(date)}
       className={cn(
         "relative flex h-[34px] w-full flex-col items-center justify-center",
         "rounded-md outline-none transition-opacity duration-200",
-        isSelected && "bg-blue-600 text-white",
-        !isSelected && isToday && "text-blue-500 font-medium",
-        !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50",
-        isDimmed && "opacity-40"
+        isDisabled && "cursor-not-allowed text-zinc-700",
+        !isDisabled && isSelected && "bg-blue-600 text-white",
+        !isDisabled && !isSelected && isToday && "text-blue-500 font-medium",
+        !isDisabled && !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50",
+        isDimmed && !isDisabled && "opacity-40"
       )}
     >
       {/* Month label - absolutely positioned at top so number stays centered */}
       <span
         className={cn(
           "absolute top-0.5 text-[9px] leading-none transition-opacity duration-200",
-          isSelected ? "text-blue-200" : "text-zinc-500",
+          isDisabled ? "text-zinc-700" : isSelected ? "text-blue-200" : "text-zinc-500",
           monthLabelVisible ? "opacity-100" : "opacity-0"
         )}
       >

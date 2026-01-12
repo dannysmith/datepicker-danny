@@ -90,13 +90,6 @@ export function formatMonthFull(date: Date): string {
 }
 
 /**
- * Format month and year (e.g., "January 2024")
- */
-export function formatMonthYear(date: Date): string {
-  return format(date, "MMMM yyyy");
-}
-
-/**
  * Check if two dates are the same day
  */
 export function areSameDay(date1: Date, date2: Date): boolean {
@@ -128,3 +121,16 @@ export function getToday(): Date {
  * Days of week headers (Monday first)
  */
 export const WEEKDAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/**
+ * Check if a date is within the allowed range (inclusive)
+ */
+export function isDateDisabled(
+  date: Date,
+  minDate?: Date,
+  maxDate?: Date
+): boolean {
+  if (minDate && date < startOfDay(minDate)) return true;
+  if (maxDate && date > startOfDay(maxDate)) return true;
+  return false;
+}
