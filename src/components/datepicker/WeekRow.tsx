@@ -4,12 +4,18 @@ import { getWeekDays, areSameDay, isFirstOfMonth, getToday } from "./utils";
 interface WeekRowProps {
   weekIndex: number;
   selectedDate: Date;
+  showSelectedMonthLabel: boolean;
   onDateSelect: (date: Date) => void;
 }
 
 const today = getToday();
 
-export function WeekRow({ weekIndex, selectedDate, onDateSelect }: WeekRowProps) {
+export function WeekRow({
+  weekIndex,
+  selectedDate,
+  showSelectedMonthLabel,
+  onDateSelect,
+}: WeekRowProps) {
   const days = getWeekDays(weekIndex);
 
   return (
@@ -21,6 +27,7 @@ export function WeekRow({ weekIndex, selectedDate, onDateSelect }: WeekRowProps)
           isSelected={areSameDay(date, selectedDate)}
           isToday={areSameDay(date, today)}
           isFirstOfMonth={isFirstOfMonth(date)}
+          showSelectedMonthLabel={showSelectedMonthLabel}
           onClick={onDateSelect}
         />
       ))}

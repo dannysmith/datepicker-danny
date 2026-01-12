@@ -6,6 +6,7 @@ interface DateCellProps {
   isSelected: boolean;
   isToday: boolean;
   isFirstOfMonth: boolean;
+  showSelectedMonthLabel: boolean;
   onClick: (date: Date) => void;
 }
 
@@ -14,17 +15,20 @@ export function DateCell({
   isSelected,
   isToday,
   isFirstOfMonth,
+  showSelectedMonthLabel,
   onClick,
 }: DateCellProps) {
-  const showMonthLabel = isSelected || isFirstOfMonth;
+  // Show month label on first of month, OR on selected if enough time has passed
+  const showMonthLabel = isFirstOfMonth || (isSelected && showSelectedMonthLabel);
 
   return (
     <button
       type="button"
+      tabIndex={-1}
       onClick={() => onClick(date)}
       className={cn(
         "relative flex h-full w-full flex-col items-center justify-center",
-        "rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+        "rounded-md transition-colors outline-none",
         isSelected && "bg-blue-600 text-white",
         !isSelected && isToday && "text-blue-500 font-medium",
         !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50"

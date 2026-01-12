@@ -13,11 +13,11 @@ import {
 import { addDays, addWeeks } from "date-fns";
 
 const WEEK_HEIGHT = 44; // pixels per week row
+const MONTH_LABEL_DELAY = 350; // ms before showing month on selected date
 
 interface CalendarGridProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
-  onKeyboardNavigate?: (date: Date) => void;
 }
 
 export function CalendarGrid({
@@ -25,9 +25,12 @@ export function CalendarGrid({
   onDateSelect,
 }: CalendarGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState("");
+  const [showSelectedMonthLabel, setShowSelectedMonthLabel] = useState(true);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const monthLabelTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialScrollDone = useRef(false);
 
   const initialWeekIndex = getInitialWeekIndex(selectedDate);
@@ -39,6 +42,33 @@ export function CalendarGrid({
     overscan: 10,
     initialOffset: initialWeekIndex * WEEK_HEIGHT,
   });
+
+  // Auto-focus the grid on mount
+  useEffect(() => {
+    gridRef.current?.focus();
+  }, []);
+
+  // Handle delayed month label on selected date
+  useEffect(() => {
+    // Hide month label immediately when selection changes
+    setShowSelectedMonthLabel(false);
+
+    // Clear any existing timeout
+    if (monthLabelTimeoutRef.current) {
+      clearTimeout(monthLabelTimeoutRef.current);
+    }
+
+    // Show month label after delay
+    monthLabelTimeoutRef.current = setTimeout(() => {
+      setShowSelectedMonthLabel(true);
+    }, MONTH_LABEL_DELAY);
+
+    return () => {
+      if (monthLabelTimeoutRef.current) {
+        clearTimeout(monthLabelTimeoutRef.current);
+      }
+    };
+  }, [selectedDate]);
 
   // Update visible month based on scroll position
   const updateVisibleMonth = useCallback(() => {
@@ -137,7 +167,12 @@ export function CalendarGrid({
   );
 
   return (
-    <div className="flex flex-col" onKeyDown={handleKeyDown} tabIndex={0}>
+    <div
+      ref={gridRef}
+      className="flex flex-col outline-none"
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+    >
       {/* Day of week headers */}
       <div className="grid grid-cols-7 gap-0.5 border-b border-zinc-800 pb-2">
         {WEEKDAY_HEADERS.map((day) => (
@@ -154,7 +189,7 @@ export function CalendarGrid({
       <div className="relative">
         <div
           ref={containerRef}
-          className="h-[308px] overflow-auto focus:outline-none"
+          className="h-[308px] overflow-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <div
@@ -179,6 +214,7 @@ export function CalendarGrid({
                 <WeekRow
                   weekIndex={virtualWeek.index}
                   selectedDate={selectedDate}
+                  showSelectedMonthLabel={showSelectedMonthLabel}
                   onDateSelect={onDateSelect}
                 />
               </div>
