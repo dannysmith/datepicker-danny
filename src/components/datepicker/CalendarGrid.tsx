@@ -82,6 +82,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     };
 
     updateRowHeight();
+    rowVirtualizer.measure(); // Tell virtualizer about new row height BEFORE initial scroll
 
     const container = fontSizeContainerRef.current;
     if (!container) return;
@@ -157,7 +158,6 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
       rowVirtualizer.scrollToIndex(weekIndex, { align: "center" });
       setVisibleMonth(formatMonthFull(selectedDate));
       // Mark initial scroll as done after a delay to allow scroll events to settle
-      // This is more robust than a fixed timeout from mount
       setTimeout(() => {
         initialScrollDone.current = true;
       }, 100);
