@@ -2,6 +2,10 @@
 
 @README.md
 
+## Package Manager
+
+Use `bun` for this project, not `pnpm` or `npm`.
+
 ## Project Direction
 
 This started as a throwaway prototype but is being turned into a proper package:
@@ -13,7 +17,7 @@ Neither of these are implemented yet — the component itself is complete and wo
 
 ## Task List
 
-- [ ] Review datepicker for accessibility and tab navigation etc.
+- [x] Review datepicker for accessibility and tab navigation etc.
 - [ ] Create a demo page (in App.tsx) which shows the picker used in avariety of ways:
   - [ ] In a HTML popover triggered by a button
   - [ ] In a shadcn popover triggered by a button
