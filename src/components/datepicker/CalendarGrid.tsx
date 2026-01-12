@@ -217,7 +217,14 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   const announcedMonth = format(selectedDate, "MMMM yyyy");
 
   return (
-    <div className="mx-auto flex max-w-[340px] flex-col">
+    <div
+      className="mx-auto max-w-[340px]"
+      style={{ containerType: "inline-size" }}
+    >
+    <div
+      className="flex flex-col"
+      style={{ fontSize: "clamp(9px, 5cqw, 16px)" }}
+    >
       {/* Screen reader announcement for current month */}
       <div
         aria-live="polite"
@@ -234,7 +241,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
             key={day}
             role="columnheader"
             aria-label={WEEKDAY_FULL_NAMES[index]}
-            className="text-center text-xs font-medium text-dp-text-muted"
+            className="text-center text-[0.85em] font-medium text-dp-text-muted"
           >
             {day}
           </div>
@@ -288,6 +295,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
         {/* Month overlay */}
         <MonthOverlay monthName={visibleMonth} isVisible={isScrolling} />
       </div>
+    </div>
     </div>
   );
 });

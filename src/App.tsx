@@ -86,6 +86,7 @@ export function App() {
   const [wideDate, setWideDate] = useState<Date>(new Date());
   const [narrowDate, setNarrowDate] = useState<Date>(new Date());
   const [tinyDate, setTinyDate] = useState<Date>(new Date());
+  const [superTinyDate, setSuperTinyDate] = useState<Date>(new Date());
   const [futureOnlyDate, setFutureOnlyDate] = useState<Date>(new Date());
   const [pastOnlyDate, setPastOnlyDate] = useState<Date>(new Date());
   const [weekWindowDate, setWeekWindowDate] = useState<Date>(new Date());
@@ -255,6 +256,20 @@ export function App() {
                 <DatePicker
                   value={tinyDate}
                   onChange={setTinyDate}
+                  placeholder="Select date"
+                />
+              </div>
+            </DemoCard>
+
+            {/* Absolute minimum */}
+            <DemoCard
+              label="Absolute Minimum (200px)"
+              description="Font should be visibly smaller"
+            >
+              <div className="w-[200px]">
+                <DatePicker
+                  value={superTinyDate}
+                  onChange={setSuperTinyDate}
                   placeholder="Select date"
                 />
               </div>
