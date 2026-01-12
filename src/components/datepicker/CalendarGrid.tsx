@@ -217,7 +217,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   const announcedMonth = format(selectedDate, "MMMM yyyy");
 
   return (
-    <div className="flex flex-col">
+    <div className="mx-auto flex max-w-[340px] flex-col">
       {/* Screen reader announcement for current month */}
       <div
         aria-live="polite"

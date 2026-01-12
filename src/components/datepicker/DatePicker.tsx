@@ -100,7 +100,7 @@ export function DatePicker({
     : `date-${format(selectedDate, "yyyy-MM-dd")}`;
 
   return (
-    <div className="w-full min-w-[260px] max-w-[340px] mx-auto rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
+    <div className="w-full min-w-[200px] rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
       {/* Screen reader instructions */}
       <div id="datepicker-instructions" className="sr-only">
         Use arrow keys to navigate dates, Enter to select, or type to search
