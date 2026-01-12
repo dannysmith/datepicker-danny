@@ -80,7 +80,7 @@ export function DatePicker({
   const isSearchMode = query.length > 0;
 
   return (
-    <div className="w-[280px] rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl">
+    <div className="w-[280px] rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
       {/* Input field - always visible */}
       <div className="relative mb-3">
         <input
@@ -90,13 +90,13 @@ export function DatePicker({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
-          className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-center text-sm text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
+          className="w-full rounded-md border border-dp-border-muted bg-dp-elevated px-3 py-1.5 text-center text-sm text-dp-text placeholder-dp-text-muted focus:border-dp-ring focus:outline-none focus:ring-1 focus:ring-dp-ring"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-dp-text-muted hover:text-dp-text-secondary"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

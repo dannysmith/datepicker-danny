@@ -14,7 +14,7 @@ export function MonthOverlay({ monthName, isVisible }: MonthOverlayProps) {
         isVisible ? "opacity-100" : "opacity-0"
       )}
     >
-      <span className="text-2xl font-semibold text-zinc-300/80">
+      <span className="text-2xl font-semibold text-dp-text-secondary/80">
         {monthName}
       </span>
     </div>

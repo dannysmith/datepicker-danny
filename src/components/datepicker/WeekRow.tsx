@@ -29,7 +29,7 @@ export function WeekRow({
   return (
     <div className={cn(
       "grid w-full grid-cols-7 gap-0.5",
-      hasMonthStart && "border-t border-zinc-700/50"
+      hasMonthStart && "border-t border-dp-border-muted/50"
     )}>
       {days.map((date, i) => (
         <DateCell

@@ -141,7 +141,7 @@ export function FuzzySearchResults({
 
   if (results.length === 0) {
     return (
-      <div className="py-8 text-center text-sm text-zinc-500">
+      <div className="py-8 text-center text-sm text-dp-text-muted">
         No dates found
       </div>
     );
@@ -160,16 +160,16 @@ export function FuzzySearchResults({
             className={cn(
               "flex items-center justify-between px-3 py-2 text-sm",
               "rounded-md transition-colors",
-              disabled && "cursor-not-allowed text-zinc-600",
-              !disabled && index === selectedIndex && "bg-blue-600 text-white",
-              !disabled && index !== selectedIndex && "text-zinc-300 hover:bg-zinc-800"
+              disabled && "cursor-not-allowed text-dp-text-disabled",
+              !disabled && index === selectedIndex && "bg-dp-primary text-dp-primary-fg",
+              !disabled && index !== selectedIndex && "text-dp-text-secondary hover:bg-dp-elevated"
             )}
           >
             <span>{result.label}</span>
             <span
               className={cn(
                 "text-xs",
-                disabled ? "text-zinc-700" : index === selectedIndex ? "text-blue-200" : "text-zinc-500"
+                disabled ? "text-dp-text-disabled" : index === selectedIndex ? "text-dp-primary-muted" : "text-dp-text-muted"
               )}
             >
               {isToday(result.date)

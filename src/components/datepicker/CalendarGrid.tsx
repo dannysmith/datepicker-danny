@@ -217,11 +217,11 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   return (
     <div className="flex flex-col">
       {/* Day of week headers */}
-      <div className="grid grid-cols-7 gap-0.5 border-b border-zinc-800 pb-2">
+      <div className="grid grid-cols-7 gap-0.5 border-b border-dp-border pb-2">
         {WEEKDAY_HEADERS.map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-medium text-zinc-500"
+            className="text-center text-xs font-medium text-dp-text-muted"
           >
             {day}
           </div>
