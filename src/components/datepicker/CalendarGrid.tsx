@@ -12,7 +12,7 @@ import {
 } from "./utils";
 import { addDays, addWeeks } from "date-fns";
 
-const WEEK_HEIGHT = 44; // pixels per week row
+const WEEK_HEIGHT = 36; // pixels per week row
 const MONTH_LABEL_DELAY = 350; // ms before showing month on selected date
 
 interface CalendarGridProps {
@@ -211,7 +211,7 @@ export function CalendarGrid({
       <div className="relative">
         <div
           ref={containerRef}
-          className="h-[308px] overflow-auto scroll-smooth"
+          className="h-[252px] overflow-auto scroll-smooth"
           style={{ scrollbarWidth: "none" }}
         >
           <div

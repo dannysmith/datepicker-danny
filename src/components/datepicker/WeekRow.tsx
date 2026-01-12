@@ -19,7 +19,7 @@ export function WeekRow({
   const days = getWeekDays(weekIndex);
 
   return (
-    <div className="grid h-full w-full grid-cols-7 gap-0.5">
+    <div className="grid w-full grid-cols-7 gap-0.5">
       {days.map((date, i) => (
         <DateCell
           key={i}
