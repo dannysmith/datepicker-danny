@@ -90,12 +90,16 @@ export function DatePicker({
           onChange={handleInputChange}
           onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
+          aria-label="Search for a date, or use arrow keys to navigate calendar"
+          aria-controls={isSearchMode ? "datepicker-search-results" : "datepicker-grid"}
+          aria-autocomplete={isSearchMode ? "list" : undefined}
           className="w-full rounded-md border border-dp-border-muted bg-dp-elevated px-3 py-1.5 text-center text-sm text-dp-text placeholder-dp-text-muted focus:border-dp-ring focus:outline-none focus:ring-1 focus:ring-dp-ring"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
+            aria-label="Clear search"
             className="absolute right-2 top-1/2 -translate-y-1/2 text-dp-text-muted hover:text-dp-text-secondary"
           >
             <svg

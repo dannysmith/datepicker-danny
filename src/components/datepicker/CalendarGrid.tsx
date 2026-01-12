@@ -11,8 +11,9 @@ import {
   getToday,
   isDateDisabled,
   WEEKDAY_HEADERS,
+  WEEKDAY_FULL_NAMES,
 } from "./utils";
-import { addDays, addWeeks } from "date-fns";
+import { addDays, addWeeks, format } from "date-fns";
 
 const WEEK_HEIGHT = 36; // pixels per week row
 const MONTH_LABEL_DELAY = 150; // ms before showing month on selected date
@@ -214,13 +215,27 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     navigate,
   }), [navigate]);
 
+  // Format the month/year for screen reader announcement
+  const announcedMonth = format(selectedDate, "MMMM yyyy");
+
   return (
     <div className="flex flex-col">
+      {/* Screen reader announcement for current month */}
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcedMonth}
+      </div>
+
       {/* Day of week headers */}
-      <div className="grid grid-cols-7 gap-0.5 border-b border-dp-border pb-2">
-        {WEEKDAY_HEADERS.map((day) => (
+      <div role="row" className="grid grid-cols-7 gap-0.5 border-b border-dp-border pb-2">
+        {WEEKDAY_HEADERS.map((day, index) => (
           <div
             key={day}
+            role="columnheader"
+            aria-label={WEEKDAY_FULL_NAMES[index]}
             className="text-center text-xs font-medium text-dp-text-muted"
           >
             {day}
@@ -232,6 +247,9 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
       <div className="relative">
         <div
           ref={containerRef}
+          id="datepicker-grid"
+          role="grid"
+          aria-label="Calendar"
           className="h-[252px] overflow-auto"
           style={{ scrollbarWidth: "none" }}
         >

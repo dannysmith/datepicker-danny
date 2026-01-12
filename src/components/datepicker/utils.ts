@@ -123,6 +123,11 @@ export function getToday(): Date {
 export const WEEKDAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 /**
+ * Full day names for accessibility (Monday first)
+ */
+export const WEEKDAY_FULL_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+/**
  * Check if a date is within the allowed range (inclusive)
  */
 export function isDateDisabled(

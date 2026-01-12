@@ -141,20 +141,37 @@ export function FuzzySearchResults({
 
   if (results.length === 0) {
     return (
-      <div className="py-8 text-center text-sm text-dp-text-muted">
+      <div
+        id="datepicker-search-results"
+        role="listbox"
+        aria-label="Search results"
+        className="py-8 text-center text-sm text-dp-text-muted"
+      >
         No dates found
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col">
+    <div
+      id="datepicker-search-results"
+      role="listbox"
+      aria-label="Search results"
+      className="flex flex-col"
+    >
       {results.map((result, index) => {
         const disabled = isDateDisabled(result.date, minDate, maxDate);
+        // Full date for screen reader announcement
+        const fullDateLabel = format(result.date, "EEEE, MMMM d, yyyy");
         return (
           <button
             key={result.date.getTime()}
             type="button"
+            role="option"
+            id={`search-result-${index}`}
+            aria-selected={index === selectedIndex}
+            aria-disabled={disabled || undefined}
+            aria-label={`${result.label}, ${fullDateLabel}`}
             disabled={disabled}
             onClick={() => !disabled && onDateSelect(result.date)}
             className={cn(

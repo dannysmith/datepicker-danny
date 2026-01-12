@@ -27,10 +27,13 @@ export function WeekRow({
   const hasMonthStart = days.some((d) => isFirstOfMonth(d));
 
   return (
-    <div className={cn(
-      "grid w-full grid-cols-7 gap-0.5",
-      hasMonthStart && "border-t border-dp-border-muted/50"
-    )}>
+    <div
+      role="row"
+      className={cn(
+        "grid w-full grid-cols-7 gap-0.5",
+        hasMonthStart && "border-t border-dp-border-muted/50"
+      )}
+    >
       {days.map((date, i) => (
         <DateCell
           key={i}

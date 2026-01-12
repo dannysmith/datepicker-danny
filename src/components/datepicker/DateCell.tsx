@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { formatDayNumber, formatMonthAbbr } from "./utils";
+import { format } from "date-fns";
 
 interface DateCellProps {
   date: Date;
@@ -26,11 +27,19 @@ export function DateCell({
   const monthLabelVisible =
     isFirstOfMonth || (isSelected && showSelectedMonthLabel);
 
+  // Full date label for screen readers (e.g., "Monday, January 15, 2025")
+  const ariaLabel = format(date, "EEEE, MMMM d, yyyy");
+
   return (
     <button
       type="button"
-      tabIndex={-1}
+      role="gridcell"
+      tabIndex={isSelected ? 0 : -1}
       disabled={isDisabled}
+      aria-selected={isSelected}
+      aria-current={isToday ? "date" : undefined}
+      aria-label={ariaLabel}
+      aria-disabled={isDisabled || undefined}
       onClick={() => !isDisabled && onClick(date)}
       className={cn(
         "relative flex h-[34px] w-full flex-col items-center justify-center",
