@@ -13,7 +13,7 @@ import {
 import { addDays, addWeeks } from "date-fns";
 
 const WEEK_HEIGHT = 36; // pixels per week row
-const MONTH_LABEL_DELAY = 350; // ms before showing month on selected date
+const MONTH_LABEL_DELAY = 150; // ms before showing month on selected date
 
 interface CalendarGridProps {
   selectedDate: Date;
@@ -30,6 +30,7 @@ export function CalendarGrid({
   const [visibleMonth, setVisibleMonth] = useState("");
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialScrollDone = useRef(false);
+  const isKeyboardNavigatingRef = useRef(false);
 
   // Track selection timing with refs for synchronous updates during render
   const prevSelectedDateRef = useRef<number>(selectedDate.getTime());
@@ -90,6 +91,9 @@ export function CalendarGrid({
     if (!container) return;
 
     const handleScroll = () => {
+      // Skip overlay/dimming for keyboard navigation
+      if (isKeyboardNavigatingRef.current) return;
+
       setIsScrolling(true);
       updateVisibleMonth();
 
@@ -138,10 +142,10 @@ export function CalendarGrid({
     return weekTop >= scrollTop + margin && weekBottom <= scrollTop + viewportHeight - margin;
   }, []);
 
-  // Scroll to a week index only if needed
+  // Scroll to a week index only if needed (instant scroll for keyboard nav)
   const scrollToWeekIfNeeded = useCallback((weekIndex: number) => {
     if (!isWeekVisible(weekIndex)) {
-      rowVirtualizer.scrollToIndex(weekIndex, { align: "center" });
+      rowVirtualizer.scrollToIndex(weekIndex, { align: "auto" });
     }
   }, [isWeekVisible, rowVirtualizer]);
 
@@ -182,7 +186,15 @@ export function CalendarGrid({
 
         // Only scroll if the new date would be off-screen
         const weekIndex = dateToWeekIndex(newDate);
+
+        // Flag keyboard navigation to suppress overlay/dimming
+        isKeyboardNavigatingRef.current = true;
         scrollToWeekIfNeeded(weekIndex);
+
+        // Clear flag after scroll completes
+        setTimeout(() => {
+          isKeyboardNavigatingRef.current = false;
+        }, 300);
       }
     },
     [selectedDate, onDateSelect, scrollToWeekIfNeeded]
@@ -211,7 +223,7 @@ export function CalendarGrid({
       <div className="relative">
         <div
           ref={containerRef}
-          className="h-[252px] overflow-auto scroll-smooth"
+          className="h-[252px] overflow-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <div
