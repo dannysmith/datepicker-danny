@@ -10,6 +10,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { isDateDisabled } from "./utils";
+import { expandPartialInput, scoreResult } from "./fuzzyDateParser";
 
 interface FuzzySearchResultsProps {
   query: string;
@@ -50,51 +51,38 @@ function getResultLabel(date: Date, text: string): string {
   return format(date, "EEE d MMM"); // "Thu 15 Jan"
 }
 
-function parseInput(text: string): ParsedResult[] {
+function parseInput(text: string, referenceDate: Date = new Date()): ParsedResult[] {
   if (!text.trim()) return [];
 
-  const results = chrono.parse(text, new Date(), { forwardDate: true });
-  const seen = new Set<number>();
-  const parsed: ParsedResult[] = [];
+  const candidates = expandPartialInput(text);
+  const resultsMap = new Map<number, { result: ParsedResult; score: number }>();
 
-  for (const result of results) {
-    const date = result.start.date();
-    const dayKey = startOfDay(date).getTime();
+  for (const candidate of candidates) {
+    const parsed = chrono.parse(candidate, referenceDate, { forwardDate: true });
 
-    if (seen.has(dayKey)) continue;
-    seen.add(dayKey);
+    for (const chronoResult of parsed) {
+      const date = chronoResult.start.date();
+      const dayKey = startOfDay(date).getTime();
+      const score = scoreResult(text, candidate, date, referenceDate);
 
-    parsed.push({
-      label: getResultLabel(date, result.text),
-      date,
-      relativeText: getRelativeText(date),
-    });
-  }
-
-  // If chrono didn't find anything, try some common shortcuts
-  if (parsed.length === 0) {
-    const lower = text.toLowerCase();
-    const today = new Date();
-
-    if ("today".startsWith(lower)) {
-      parsed.push({
-        label: "Today",
-        date: today,
-        relativeText: "today",
-      });
-    }
-    if ("tomorrow".startsWith(lower)) {
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      parsed.push({
-        label: "Tomorrow",
-        date: tomorrow,
-        relativeText: "tomorrow",
-      });
+      const existing = resultsMap.get(dayKey);
+      if (!existing || score > existing.score) {
+        resultsMap.set(dayKey, {
+          result: {
+            label: getResultLabel(date, chronoResult.text),
+            date,
+            relativeText: getRelativeText(date),
+          },
+          score,
+        });
+      }
     }
   }
 
-  return parsed.slice(0, 5); // Limit to 5 results
+  return [...resultsMap.values()]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+    .map(({ result }) => result);
 }
 
 export function FuzzySearchResults({
