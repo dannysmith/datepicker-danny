@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import * as chrono from "chrono-node";
 import { cn } from "@/lib/utils";
 import {
@@ -10,10 +10,9 @@ import {
   startOfDay,
 } from "date-fns";
 
-interface FuzzySearchProps {
+interface FuzzySearchResultsProps {
+  query: string;
   onDateSelect: (date: Date) => void;
-  onClose: () => void;
-  inputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 interface ParsedResult {
@@ -95,16 +94,11 @@ function parseInput(text: string): ParsedResult[] {
   return parsed.slice(0, 5); // Limit to 5 results
 }
 
-export function FuzzySearch({
+export function FuzzySearchResults({
+  query,
   onDateSelect,
-  onClose,
-  inputRef: externalInputRef,
-}: FuzzySearchProps) {
-  const [query, setQuery] = useState("");
+}: FuzzySearchResultsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const internalInputRef = useRef<HTMLInputElement | null>(null);
-  const inputRef = externalInputRef || internalInputRef;
-
   const results = useMemo(() => parseInput(query), [query]);
 
   // Reset selection when results change
@@ -112,8 +106,9 @@ export function FuzzySearch({
     setSelectedIndex(0);
   }, [results]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
@@ -129,100 +124,53 @@ export function FuzzySearch({
             onDateSelect(results[selectedIndex].date);
           }
           break;
-        case "Escape":
-          e.preventDefault();
-          if (query) {
-            setQuery("");
-          } else {
-            onClose();
-          }
-          break;
       }
-    },
-    [results, selectedIndex, onDateSelect, onClose, query]
-  );
+    };
 
-  const handleClear = useCallback(() => {
-    setQuery("");
-    inputRef.current?.focus();
-  }, [inputRef]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [results, selectedIndex, onDateSelect]);
+
+  if (results.length === 0) {
+    return (
+      <div className="py-8 text-center text-sm text-zinc-500">
+        No dates found
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">
-      {/* Search input */}
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="When"
+      {results.map((result, index) => (
+        <button
+          key={result.date.getTime()}
+          type="button"
+          onClick={() => onDateSelect(result.date)}
           className={cn(
-            "w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100",
-            "placeholder:text-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
+            "flex items-center justify-between px-3 py-2 text-sm",
+            "rounded-md transition-colors",
+            index === selectedIndex
+              ? "bg-blue-600 text-white"
+              : "text-zinc-300 hover:bg-zinc-800"
           )}
-          autoFocus
-        />
-        {query && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+        >
+          <span>{result.label}</span>
+          <span
+            className={cn(
+              "text-xs",
+              index === selectedIndex ? "text-blue-200" : "text-zinc-500"
+            )}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {/* Results list */}
-      {results.length > 0 && (
-        <div className="mt-1 flex flex-col">
-          {results.map((result, index) => (
-            <button
-              key={result.date.getTime()}
-              type="button"
-              onClick={() => onDateSelect(result.date)}
-              className={cn(
-                "flex items-center justify-between px-3 py-2 text-sm",
-                "rounded-md transition-colors",
-                index === selectedIndex
-                  ? "bg-blue-600 text-white"
-                  : "text-zinc-300 hover:bg-zinc-800"
-              )}
-            >
-              <span>{result.label}</span>
-              <span
-                className={cn(
-                  "text-xs",
-                  index === selectedIndex ? "text-blue-200" : "text-zinc-500"
-                )}
-              >
-                {isToday(result.date)
-                  ? format(result.date, "d MMM")
-                  : result.relativeText === "today" ||
-                      result.relativeText === "tomorrow" ||
-                      result.relativeText === "yesterday"
-                    ? format(result.date, "d MMM")
-                    : result.relativeText}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+            {isToday(result.date)
+              ? format(result.date, "d MMM")
+              : result.relativeText === "today" ||
+                  result.relativeText === "tomorrow" ||
+                  result.relativeText === "yesterday"
+                ? format(result.date, "d MMM")
+                : result.relativeText}
+          </span>
+        </button>
+      ))}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { WeekRow } from "./WeekRow";
 import { MonthOverlay } from "./MonthOverlay";
@@ -20,10 +20,14 @@ interface CalendarGridProps {
   onDateSelect: (date: Date) => void;
 }
 
-export function CalendarGrid({
+export interface CalendarGridHandle {
+  focus: () => void;
+}
+
+export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(function CalendarGrid({
   selectedDate,
   onDateSelect,
-}: CalendarGridProps) {
+}, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -57,10 +61,10 @@ export function CalendarGrid({
     initialOffset: initialWeekIndex * WEEK_HEIGHT,
   });
 
-  // Auto-focus the grid on mount
-  useEffect(() => {
-    gridRef.current?.focus();
-  }, []);
+  // Expose focus method via ref
+  useImperativeHandle(ref, () => ({
+    focus: () => gridRef.current?.focus(),
+  }), []);
 
   // Trigger re-render after delay to show the month label
   useEffect(() => {
@@ -262,4 +266,4 @@ export function CalendarGrid({
       </div>
     </div>
   );
-}
+});

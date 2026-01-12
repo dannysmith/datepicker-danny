@@ -1,10 +1,8 @@
-import { useState, useCallback, useRef } from "react";
-import { CalendarGrid } from "./CalendarGrid";
-import { FuzzySearch } from "./FuzzySearch";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { CalendarGrid, type CalendarGridHandle } from "./CalendarGrid";
+import { FuzzySearchResults } from "./FuzzySearch";
 import { normalizeDate, getToday } from "./utils";
 import type { DatePickerProps } from "./types";
-
-type Mode = "calendar" | "search";
 
 export function DatePicker({
   value,
@@ -14,54 +12,108 @@ export function DatePicker({
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
     normalizeDate(value || getToday())
   );
-  const [mode, setMode] = useState<Mode>("calendar");
+  const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const calendarRef = useRef<CalendarGridHandle>(null);
+
+  // Keep input focused
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleDateSelect = useCallback(
     (date: Date) => {
       const normalized = normalizeDate(date);
       setSelectedDate(normalized);
       onChange(normalized);
-      setMode("calendar");
+      setQuery(""); // Clear search after selection
+      inputRef.current?.focus();
     },
     [onChange]
   );
 
-  const handleInputClick = useCallback(() => {
-    setMode("search");
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+    },
+    []
+  );
+
+  const handleInputKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // If no query and arrow keys, let calendar handle it
+      if (!query && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+        // Forward to calendar
+        calendarRef.current?.focus();
+        return;
+      }
+
+      // Escape clears query or does nothing
+      if (e.key === "Escape" && query) {
+        e.preventDefault();
+        setQuery("");
+      }
+    },
+    [query]
+  );
+
+  const handleClear = useCallback(() => {
+    setQuery("");
+    inputRef.current?.focus();
   }, []);
 
-  const handleSearchClose = useCallback(() => {
-    setMode("calendar");
-  }, []);
+  const isSearchMode = query.length > 0;
 
   return (
     <div className="w-[280px] rounded-lg border border-zinc-800 bg-zinc-900 p-3 shadow-xl">
-      {mode === "search" ? (
-        <FuzzySearch
+      {/* Input field - always visible */}
+      <div className="relative mb-3">
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          placeholder={placeholder}
+          className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-center text-sm text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Show search results OR calendar */}
+      {isSearchMode ? (
+        <FuzzySearchResults
+          query={query}
           onDateSelect={handleDateSelect}
-          onClose={handleSearchClose}
-          inputRef={inputRef}
         />
       ) : (
-        <>
-          {/* Input field - click to enter search mode */}
-          <div className="mb-3">
-            <button
-              type="button"
-              onClick={handleInputClick}
-              className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-center text-sm text-zinc-500 hover:border-zinc-600 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600"
-            >
-              {placeholder}
-            </button>
-          </div>
-
-          {/* Calendar grid */}
-          <CalendarGrid
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-          />
-        </>
+        <CalendarGrid
+          ref={calendarRef}
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
       )}
     </div>
   );
