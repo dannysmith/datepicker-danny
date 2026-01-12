@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { DateCell } from "./DateCell";
 import { getWeekDays, areSameDay, isFirstOfMonth, isDateDisabled } from "./utils";
 
@@ -23,9 +24,13 @@ export function WeekRow({
   onDateSelect,
 }: WeekRowProps) {
   const days = getWeekDays(weekIndex);
+  const hasMonthStart = days.some((d) => isFirstOfMonth(d));
 
   return (
-    <div className="grid w-full grid-cols-7 gap-0.5">
+    <div className={cn(
+      "grid w-full grid-cols-7 gap-0.5",
+      hasMonthStart && "border-t border-zinc-700/50"
+    )}>
       {days.map((date, i) => (
         <DateCell
           key={i}
