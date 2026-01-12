@@ -115,10 +115,10 @@ export function FuzzySearchResults({
     );
     const newIndex = firstEnabled >= 0 ? firstEnabled : 0;
     setSelectedIndex(newIndex);
-    onSelectionChange?.(newIndex);
-  }, [results, minDate, maxDate, onSelectionChange]);
+  }, [results, minDate, maxDate]);
 
-  // Notify parent when selection changes via keyboard
+  // Notify parent of selection changes (for aria-activedescendant)
+  // Using a separate effect to avoid re-running the reset logic
   useEffect(() => {
     onSelectionChange?.(selectedIndex);
   }, [selectedIndex, onSelectionChange]);
