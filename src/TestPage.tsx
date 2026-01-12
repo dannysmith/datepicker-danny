@@ -32,22 +32,29 @@ export function TestPage() {
   const [date, setDate] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
 
+  const handleCommit = (newDate: Date) => {
+    setDate(newDate);
+    setOpen(false);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 p-8">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
-            <Button variant="outline" className="w-[280px] justify-start gap-2">
+            <Button variant="outline" className="justify-start gap-1">
               <CalendarIcon className="size-4 text-zinc-400" />
-              <span>{format(date, "PPP")}</span>
+              <span>{format(date, "d MMM")}</span>
             </Button>
           }
         />
-        <PopoverContent className="w-[340px]">
+        <PopoverContent className="w-[200px]">
           <DatePicker
             value={date}
-            onChange={setDate}
-            onCommit={() => setOpen(false)}
+            onChange={() => {
+              // Don't update the actual date during navigation - only on commit
+            }}
+            onCommit={handleCommit}
             placeholder="Select date"
           />
         </PopoverContent>
