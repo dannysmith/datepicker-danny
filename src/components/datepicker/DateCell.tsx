@@ -45,8 +45,8 @@ export function DateCell({
       aria-disabled={isDisabled || undefined}
       onClick={() => !isDisabled && onClick(date)}
       className={cn(
-        "relative flex h-[34px] w-full flex-col items-center justify-center [font-size:inherit]",
-        "rounded-md outline-none transition-opacity duration-200",
+        "relative flex h-[2.4em] w-full flex-col items-center justify-center [font-size:inherit]",
+        "rounded-[0.43em] outline-none transition-opacity duration-200",
         isDisabled && "cursor-not-allowed text-dp-text-disabled",
         !isDisabled && isSelected && "bg-dp-primary text-dp-primary-fg",
         !isDisabled && !isSelected && isToday && "text-dp-accent font-medium",
@@ -57,7 +57,7 @@ export function DateCell({
       {/* Month label - absolutely positioned at top so number stays centered */}
       <span
         className={cn(
-          "absolute top-0.5 text-[0.65em] leading-none transition-opacity duration-200",
+          "absolute top-[0.14em] text-[0.65em] leading-none transition-opacity duration-200",
           isDisabled ? "text-dp-text-disabled" : isSelected ? "text-dp-primary-muted" : "text-dp-text-muted",
           monthLabelVisible ? "opacity-100" : "opacity-0"
         )}

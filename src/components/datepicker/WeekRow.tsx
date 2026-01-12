@@ -30,7 +30,7 @@ export function WeekRow({
     <div
       role="row"
       className={cn(
-        "grid w-full grid-cols-7 gap-0.5",
+        "grid w-full grid-cols-7 gap-[0.14em]",
         hasMonthStart && "border-t border-dp-border-muted/50"
       )}
     >

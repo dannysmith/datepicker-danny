@@ -8,7 +8,7 @@ This document outlines the plan for converting the DatePicker's calendar compone
 
 ### What's Been Done
 
-**Phase 1 & 2 COMPLETE:**
+**Phase 1, 2 & 3 COMPLETE:**
 
 1. Added container query context to CalendarGrid (two separate elements):
    ```jsx
@@ -17,8 +17,9 @@ This document outlines the plan for converting the DatePicker's calendar compone
      style={{ containerType: "inline-size" }}
    >
      <div
+       ref={fontSizeContainerRef}
        className="flex flex-col"
-       style={{ fontSize: "clamp(9px, 5cqw, 16px)" }}
+       style={{ fontSize: "clamp(10px, 5cqw, 14px)" }}
      >
    ```
 
@@ -29,30 +30,35 @@ This document outlines the plan for converting the DatePicker's calendar compone
 
 3. Added `[font-size:inherit]` to the DateCell button to fix inheritance chain
 
-4. Added demo containers at various widths (500px, 340px, 300px, 260px, 200px) to test scaling
+4. Converted layout sizes to em:
+   - `DateCell.tsx`: Height → `h-[2.4em]`
+   - `CalendarGrid.tsx`: Scroll container → `h-[18.2em]` (7 rows × 2.6em)
 
-### Root Cause of Earlier Bug (FIXED)
+5. Updated virtualizer to use dynamic row height:
+   - Added `ROW_HEIGHT_EM = 2.6` constant
+   - Added `fontSizeContainerRef` and `rowHeightRef` refs
+   - Added `useLayoutEffect` with ResizeObserver to recalculate row height on resize
+   - Virtualizer uses `rowHeightRef.current` for `estimateSize` and `initialOffset`
+   - `isWeekVisible` uses dynamic row height
 
-**The issue was putting `container-type` and `cqw` on the same element.**
+### Key Insight: Container Query Gotcha
 
-`cqw` units look for the **nearest ancestor** containment context, NOT the element itself. When both were on the same div, `cqw` was looking at a container above CalendarGrid (likely the page body), which is much wider than intended.
-
-**Fix:** Separate into two elements:
-- Outer div: `container-type: inline-size` (establishes containment)
-- Inner div: `font-size: clamp(9px, 5cqw, 16px)` (uses cqw relative to parent)
+`cqw` units look for the **nearest ancestor** containment context, NOT the element itself. Must use two elements:
+- Outer: `container-type: inline-size` (establishes containment)
+- Inner: `font-size: clamp(...)` with `cqw` (references parent's containment)
 
 ### Files Modified
 
 | File | Changes Made |
 |------|--------------|
-| `CalendarGrid.tsx` | Container setup (two divs) + weekday header em size |
-| `DateCell.tsx` | `[font-size:inherit]` on button, em text sizes |
+| `CalendarGrid.tsx` | Container setup, dynamic virtualizer, em heights |
+| `DateCell.tsx` | `[font-size:inherit]` on button, em text + height |
 | `MonthOverlay.tsx` | Em text size |
 | `App.tsx` | Demo page with various container sizes |
 
 ### Next Steps
 
-Test that scaling now works correctly at different widths, then proceed to Phase 3 (layout sizes + virtualizer)
+Phase 4: Polish and edge cases - test at various widths, adjust em values if proportions look off
 
 ---
 

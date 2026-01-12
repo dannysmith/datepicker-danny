@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { WeekRow } from "./WeekRow";
 import { MonthOverlay } from "./MonthOverlay";
@@ -15,7 +15,8 @@ import {
 } from "./utils";
 import { addDays, addWeeks, format } from "date-fns";
 
-const WEEK_HEIGHT = 36; // pixels per week row
+const ROW_HEIGHT_EM = 2.6; // row height in em units
+const DEFAULT_ROW_HEIGHT = 36; // fallback pixels (14px font * 2.6)
 const MONTH_LABEL_DELAY = 150; // ms before showing month on selected date
 
 interface CalendarGridProps {
@@ -38,6 +39,8 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   onDateSelect,
 }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const fontSizeContainerRef = useRef<HTMLDivElement>(null);
+  const rowHeightRef = useRef(DEFAULT_ROW_HEIGHT);
   const today = getToday();
   const [isScrolling, setIsScrolling] = useState(false);
   const [visibleMonth, setVisibleMonth] = useState("");
@@ -65,10 +68,31 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   const rowVirtualizer = useVirtualizer({
     count: TOTAL_WEEKS,
     getScrollElement: () => containerRef.current,
-    estimateSize: () => WEEK_HEIGHT,
+    estimateSize: () => rowHeightRef.current,
     overscan: 10,
-    initialOffset: initialWeekIndex * WEEK_HEIGHT,
+    initialOffset: initialWeekIndex * rowHeightRef.current,
   });
+
+  // Calculate row height based on computed font-size and update on resize
+  useLayoutEffect(() => {
+    const updateRowHeight = () => {
+      if (!fontSizeContainerRef.current) return;
+      const fontSize = parseFloat(getComputedStyle(fontSizeContainerRef.current).fontSize);
+      rowHeightRef.current = fontSize * ROW_HEIGHT_EM;
+    };
+
+    updateRowHeight();
+
+    const container = fontSizeContainerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(() => {
+      updateRowHeight();
+      rowVirtualizer.measure();
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [rowVirtualizer]);
 
   // Trigger re-render after delay to show the month label
   useEffect(() => {
@@ -145,13 +169,14 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     const container = containerRef.current;
     if (!container) return false;
 
+    const rowHeight = rowHeightRef.current;
     const scrollTop = container.scrollTop;
     const viewportHeight = container.clientHeight;
-    const weekTop = weekIndex * WEEK_HEIGHT;
-    const weekBottom = weekTop + WEEK_HEIGHT;
+    const weekTop = weekIndex * rowHeight;
+    const weekBottom = weekTop + rowHeight;
 
     // Add a small margin so we scroll before it's right at the edge
-    const margin = WEEK_HEIGHT * 0.5;
+    const margin = rowHeight * 0.5;
     return weekTop >= scrollTop + margin && weekBottom <= scrollTop + viewportHeight - margin;
   }, []);
 
@@ -222,8 +247,9 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
       style={{ containerType: "inline-size" }}
     >
     <div
+      ref={fontSizeContainerRef}
       className="flex flex-col"
-      style={{ fontSize: "clamp(9px, 5cqw, 16px)" }}
+      style={{ fontSize: "clamp(10px, 5cqw, 14px)" }}
     >
       {/* Screen reader announcement for current month */}
       <div
@@ -235,7 +261,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
       </div>
 
       {/* Day of week headers */}
-      <div role="row" className="grid grid-cols-7 gap-0.5 border-b border-dp-border pb-2">
+      <div role="row" className="grid grid-cols-7 gap-[0.14em] border-b border-dp-border pb-[0.57em]">
         {WEEKDAY_HEADERS.map((day, index) => (
           <div
             key={day}
@@ -255,7 +281,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
           id="datepicker-grid"
           role="grid"
           aria-label="Calendar"
-          className="h-[252px] overflow-auto"
+          className="h-[18.2em] overflow-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <div
