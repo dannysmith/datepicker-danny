@@ -41,6 +41,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialScrollDone = useRef(false);
   const isKeyboardNavigatingRef = useRef(false);
+  const isInitialMountRef = useRef(true);
 
   // Track selection timing with refs for synchronous updates during render
   const prevSelectedDateRef = useRef<number>(selectedDate.getTime());
@@ -96,8 +97,8 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     if (!container) return;
 
     const handleScroll = () => {
-      // Skip overlay/dimming for keyboard navigation
-      if (isKeyboardNavigatingRef.current) return;
+      // Skip overlay for keyboard navigation or initial mount
+      if (isKeyboardNavigatingRef.current || isInitialMountRef.current) return;
 
       setIsScrolling(true);
       updateVisibleMonth();
@@ -107,10 +108,10 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
         clearTimeout(scrollTimeoutRef.current);
       }
 
-      // Hide overlay after scrolling stops
+      // Hide overlay after scrolling stops (fast dismissal)
       scrollTimeoutRef.current = setTimeout(() => {
         setIsScrolling(false);
-      }, 500);
+      }, 100);
     };
 
     container.addEventListener("scroll", handleScroll, { passive: true });
@@ -131,6 +132,14 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
       initialScrollDone.current = true;
     }
   }, [selectedDate, rowVirtualizer]);
+
+  // Suppress overlay during initial mount (prevents flash when returning from search)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      isInitialMountRef.current = false;
+    }, 50);
+    return () => clearTimeout(timeout);
+  }, []);
 
   // Check if a week index is currently visible in the viewport
   const isWeekVisible = useCallback((weekIndex: number): boolean => {

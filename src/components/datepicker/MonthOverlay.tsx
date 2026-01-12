@@ -10,7 +10,7 @@ export function MonthOverlay({ monthName, isVisible }: MonthOverlayProps) {
     <div
       className={cn(
         "pointer-events-none absolute inset-x-0 top-1/3 flex items-center justify-center",
-        "transition-opacity duration-200",
+        "transition-opacity duration-100",
         isVisible ? "opacity-100" : "opacity-0"
       )}
     >
