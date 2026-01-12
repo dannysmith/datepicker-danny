@@ -7,6 +7,7 @@ interface DateCellProps {
   isToday: boolean;
   isFirstOfMonth: boolean;
   showSelectedMonthLabel: boolean;
+  isDimmed: boolean;
   onClick: (date: Date) => void;
 }
 
@@ -16,6 +17,7 @@ export function DateCell({
   isToday,
   isFirstOfMonth,
   showSelectedMonthLabel,
+  isDimmed,
   onClick,
 }: DateCellProps) {
   // Month label is visible if: first of month, OR selected and delay has passed
@@ -29,10 +31,11 @@ export function DateCell({
       onClick={() => onClick(date)}
       className={cn(
         "relative flex h-[34px] w-full flex-col items-center justify-center",
-        "rounded-md outline-none",
+        "rounded-md outline-none transition-opacity duration-200",
         isSelected && "bg-blue-600 text-white",
         !isSelected && isToday && "text-blue-500 font-medium",
-        !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50"
+        !isSelected && !isToday && "text-zinc-400 hover:bg-zinc-800/50",
+        isDimmed && "opacity-40"
       )}
     >
       {/* Month label - absolutely positioned at top so number stays centered */}

@@ -5,6 +5,7 @@ interface WeekRowProps {
   weekIndex: number;
   selectedDate: Date;
   showSelectedMonthLabel: boolean;
+  isScrolling: boolean;
   onDateSelect: (date: Date) => void;
 }
 
@@ -14,6 +15,7 @@ export function WeekRow({
   weekIndex,
   selectedDate,
   showSelectedMonthLabel,
+  isScrolling,
   onDateSelect,
 }: WeekRowProps) {
   const days = getWeekDays(weekIndex);
@@ -28,6 +30,7 @@ export function WeekRow({
           isToday={areSameDay(date, today)}
           isFirstOfMonth={isFirstOfMonth(date)}
           showSelectedMonthLabel={showSelectedMonthLabel}
+          isDimmed={isScrolling}
           onClick={onDateSelect}
         />
       ))}

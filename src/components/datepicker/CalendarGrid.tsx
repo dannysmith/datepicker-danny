@@ -237,6 +237,7 @@ export function CalendarGrid({
                   weekIndex={virtualWeek.index}
                   selectedDate={selectedDate}
                   showSelectedMonthLabel={showSelectedMonthLabel}
+                  isScrolling={isScrolling}
                   onDateSelect={onDateSelect}
                 />
               </div>
