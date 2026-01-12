@@ -17,6 +17,7 @@ interface FuzzySearchResultsProps {
   minDate?: Date;
   maxDate?: Date;
   onDateSelect: (date: Date) => void;
+  onSelectionChange?: (index: number) => void;
 }
 
 interface ParsedResult {
@@ -90,6 +91,7 @@ export function FuzzySearchResults({
   minDate,
   maxDate,
   onDateSelect,
+  onSelectionChange,
 }: FuzzySearchResultsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const results = useMemo(() => parseInput(query), [query]);
@@ -111,8 +113,15 @@ export function FuzzySearchResults({
     const firstEnabled = results.findIndex(
       (r) => !isDateDisabled(r.date, minDate, maxDate)
     );
-    setSelectedIndex(firstEnabled >= 0 ? firstEnabled : 0);
-  }, [results, minDate, maxDate]);
+    const newIndex = firstEnabled >= 0 ? firstEnabled : 0;
+    setSelectedIndex(newIndex);
+    onSelectionChange?.(newIndex);
+  }, [results, minDate, maxDate, onSelectionChange]);
+
+  // Notify parent when selection changes via keyboard
+  useEffect(() => {
+    onSelectionChange?.(selectedIndex);
+  }, [selectedIndex, onSelectionChange]);
 
   // Handle keyboard navigation
   useEffect(() => {

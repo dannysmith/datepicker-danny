@@ -237,11 +237,27 @@ These behaviors should stay as-is:
 
 ---
 
-## Implementation Order
+## Implementation Status
 
-1. Start with Tier 1 items - foundational accessibility
-2. Add Tier 2 items for improved screen reader experience
-3. Polish with Tier 3 if time permits
+### Completed
+
+**Tier 1 (Essential):**
+- [x] ARIA attributes on input field
+- [x] `role="grid"` and labels on CalendarGrid
+- [x] `aria-selected`, `aria-current`, `aria-label` on DateCell
+- [x] Semantic weekday headers with `columnheader` role
+- [x] `aria-live` region for month announcements
+- [x] Listbox pattern for FuzzySearchResults
+
+**Tier 2 (Important):**
+- [x] Roving tabindex (selected date gets `tabIndex={0}`)
+- [x] `aria-activedescendant` for virtual focus
+- [x] Keyboard instructions (sr-only)
+- [x] Clear button accessible label
+
+### Remaining (Tier 3 - Optional Polish)
+- [ ] Status region announcing date selection
+- [ ] Any additional polish
 
 The most impactful single change is adding `aria-label` to date cells with the full date ("Monday, January 15, 2025") and adding `aria-selected`/`aria-current` attributes.
 

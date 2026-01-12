@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { CalendarGrid, type CalendarGridHandle } from "./CalendarGrid";
 import { FuzzySearchResults } from "./FuzzySearch";
 import { normalizeDate, getToday } from "./utils";
+import { format } from "date-fns";
 import type { DatePickerProps } from "./types";
 
 export function DatePicker({
@@ -15,6 +16,7 @@ export function DatePicker({
     normalizeDate(value || getToday())
   );
   const [query, setQuery] = useState("");
+  const [searchSelectionIndex, setSearchSelectionIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<CalendarGridHandle>(null);
 
@@ -79,8 +81,18 @@ export function DatePicker({
 
   const isSearchMode = query.length > 0;
 
+  // Compute aria-activedescendant based on mode
+  const activeDescendantId = isSearchMode
+    ? `search-result-${searchSelectionIndex}`
+    : `date-${format(selectedDate, "yyyy-MM-dd")}`;
+
   return (
     <div className="w-[280px] rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
+      {/* Screen reader instructions */}
+      <div id="datepicker-instructions" className="sr-only">
+        Use arrow keys to navigate dates, Enter to select, or type to search
+      </div>
+
       {/* Input field - always visible */}
       <div className="relative mb-3">
         <input
@@ -91,7 +103,9 @@ export function DatePicker({
           onKeyDown={handleInputKeyDown}
           placeholder={placeholder}
           aria-label="Search for a date, or use arrow keys to navigate calendar"
+          aria-describedby="datepicker-instructions"
           aria-controls={isSearchMode ? "datepicker-search-results" : "datepicker-grid"}
+          aria-activedescendant={activeDescendantId}
           aria-autocomplete={isSearchMode ? "list" : undefined}
           className="w-full rounded-md border border-dp-border-muted bg-dp-elevated px-3 py-1.5 text-center text-sm text-dp-text placeholder-dp-text-muted focus:border-dp-ring focus:outline-none focus:ring-1 focus:ring-dp-ring"
         />
@@ -127,6 +141,7 @@ export function DatePicker({
           minDate={minDate}
           maxDate={maxDate}
           onDateSelect={handleDateSelect}
+          onSelectionChange={setSearchSelectionIndex}
         />
       ) : (
         <CalendarGrid

@@ -29,10 +29,13 @@ export function DateCell({
 
   // Full date label for screen readers (e.g., "Monday, January 15, 2025")
   const ariaLabel = format(date, "EEEE, MMMM d, yyyy");
+  // Stable ID for aria-activedescendant (e.g., "date-2025-01-15")
+  const cellId = `date-${format(date, "yyyy-MM-dd")}`;
 
   return (
     <button
       type="button"
+      id={cellId}
       role="gridcell"
       tabIndex={isSelected ? 0 : -1}
       disabled={isDisabled}
