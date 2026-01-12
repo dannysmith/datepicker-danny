@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { CalendarGrid, type CalendarGridHandle } from "./CalendarGrid";
 import { FuzzySearchResults } from "./FuzzySearch";
-import { normalizeDate, getToday } from "./utils";
+import { normalizeDate, getToday, isDateDisabled } from "./utils";
 import { format } from "date-fns";
 import type { DatePickerProps } from "./types";
 
@@ -76,6 +76,16 @@ export function DatePicker({
           calendarRef.current?.navigate(direction);
           return;
         }
+
+        // Enter commits the currently selected date
+        if (e.key === "Enter") {
+          e.preventDefault();
+          // Don't commit disabled dates (shouldn't happen with navigation, but defensive)
+          if (!isDateDisabled(selectedDate, minDate, maxDate)) {
+            handleDateSelect(selectedDate);
+          }
+          return;
+        }
       }
 
       // Escape clears query or does nothing
@@ -84,7 +94,7 @@ export function DatePicker({
         setQuery("");
       }
     },
-    [query]
+    [query, selectedDate, handleDateSelect, minDate, maxDate]
   );
 
   const handleClear = useCallback(() => {
