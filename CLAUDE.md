@@ -18,14 +18,7 @@ Neither of these are implemented yet — the component itself is complete and wo
 ## Task List
 
 - [x] Review datepicker for accessibility and tab navigation etc.
-- [ ] Create a demo page (in App.tsx) which shows the picker used in avariety of ways:
-  - [ ] In a HTML popover triggered by a button
-  - [ ] In a shadcn popover triggered by a button
-  - [ ] Triggered by a shadcn date picker of some sort
-  - [ ] In a wide container
-  - [ ] In a small container
-  - [ ] Etc
-  - [ ] With various diffferent combinations of props
+- [x] Create a demo page (in App.tsx) which shows the picker used in avariety of ways:
 - [ ] Ensure the datepicker is robust and self-contained in various curcumstances. Consider container queries, and isolating certain parts of the CSS so they aren't fucked by inheritance from external global CSS. We should think about when and where we want to do this though, because we probably do want this, if it's used in a site with a certain font, to inherit that font. There may be trade offs to decide here. 
 - [ ] Remove all unnececarry shadcn form this project
 - [ ] Simplify the rest of this project so it has the minimum required to contain a component and render a mini-demo with vite. Keep eslint and tsconfig and the like.

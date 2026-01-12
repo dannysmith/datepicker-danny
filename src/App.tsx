@@ -362,28 +362,6 @@ export function App() {
           </Card>
         </Section>
 
-        {/* Section 5: Placeholder Variations */}
-        <Section
-          title="Custom Placeholders"
-          description="Different placeholder text for various use cases."
-        >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              "When",
-              "Due date",
-              "Start date",
-              "Departure",
-            ].map((placeholder) => (
-              <DatePicker
-                key={placeholder}
-                value={new Date()}
-                onChange={() => {}}
-                placeholder={placeholder}
-              />
-            ))}
-          </div>
-        </Section>
-
         {/* Footer */}
         <footer className="border-t border-zinc-800 pt-8 text-center text-sm text-zinc-500">
           <p>
