@@ -11,12 +11,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, "index.html"),
-        isolated: path.resolve(__dirname, "isolated.html"),
-      },
-    },
-  },
 })
