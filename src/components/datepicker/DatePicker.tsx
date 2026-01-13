@@ -4,6 +4,7 @@ import { FuzzySearchResults } from "./FuzzySearch";
 import { normalizeDate, getToday, isDateDisabled } from "./utils";
 import { format } from "date-fns";
 import type { DatePickerProps } from "./types";
+import "./datepicker.css";
 
 export function DatePicker({
   value,
@@ -110,14 +111,14 @@ export function DatePicker({
     : `date-${format(selectedDate, "yyyy-MM-dd")}`;
 
   return (
-    <div className="w-full min-w-[200px] rounded-lg border border-dp-border bg-dp-bg p-3 shadow-xl">
+    <div className="dp-root dp-container">
       {/* Screen reader instructions */}
-      <div id="datepicker-instructions" className="sr-only">
+      <div id="datepicker-instructions" className="dp-sr-only">
         Use arrow keys to navigate dates, Enter to select, or type to search
       </div>
 
       {/* Input field - always visible */}
-      <div className="relative mb-3">
+      <div className="dp-input-wrapper">
         <input
           ref={inputRef}
           type="text"
@@ -130,14 +131,14 @@ export function DatePicker({
           aria-controls={isSearchMode ? "datepicker-search-results" : "datepicker-grid"}
           aria-activedescendant={activeDescendantId}
           aria-autocomplete={isSearchMode ? "list" : undefined}
-          className="w-full rounded-md border border-dp-border-muted bg-dp-elevated px-3 py-1.5 text-center text-sm text-dp-text placeholder-dp-text-muted focus:border-dp-ring focus:outline-none focus:ring-1 focus:ring-dp-ring"
+          className="dp-input"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
             aria-label="Clear search"
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-dp-text-muted hover:text-dp-text-secondary"
+            className="dp-clear-btn"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

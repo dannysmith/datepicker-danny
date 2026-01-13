@@ -1,5 +1,4 @@
-import { cn } from "@/lib/utils";
-import { formatDayNumber, formatMonthAbbr } from "./utils";
+import { formatDayNumber, formatMonthAbbr, cx } from "./utils";
 import { format } from "date-fns";
 
 interface DateCellProps {
@@ -32,6 +31,22 @@ export function DateCell({
   // Stable ID for aria-activedescendant (e.g., "date-2025-01-15")
   const cellId = `date-${format(date, "yyyy-MM-dd")}`;
 
+  // Determine cell state class
+  const stateClass = isDisabled
+    ? "dp-cell--disabled"
+    : isSelected
+      ? "dp-cell--selected"
+      : isToday
+        ? "dp-cell--today"
+        : "dp-cell--default";
+
+  // Determine month label color class
+  const monthColorClass = isDisabled
+    ? "dp-cell-month--disabled"
+    : isSelected
+      ? "dp-cell-month--selected"
+      : "dp-cell-month--default";
+
   return (
     <button
       type="button"
@@ -44,27 +59,23 @@ export function DateCell({
       aria-label={ariaLabel}
       aria-disabled={isDisabled || undefined}
       onClick={() => !isDisabled && onClick(date)}
-      className={cn(
-        "relative flex h-[2.4em] w-full flex-col items-center justify-center [font-size:inherit]",
-        "rounded-[0.43em] outline-none transition-opacity duration-200",
-        isDisabled && "cursor-not-allowed text-dp-text-disabled",
-        !isDisabled && isSelected && "bg-dp-primary text-dp-primary-fg",
-        !isDisabled && !isSelected && isToday && "text-dp-accent font-medium",
-        !isDisabled && !isSelected && !isToday && "text-dp-text-secondary hover:bg-dp-elevated/50",
-        isDimmed && !isDisabled && "opacity-40"
+      className={cx(
+        "dp-cell",
+        stateClass,
+        isDimmed && !isDisabled && "dp-cell--dimmed"
       )}
     >
       {/* Month label - absolutely positioned at top so number stays centered */}
       <span
-        className={cn(
-          "absolute top-[0.14em] text-[0.65em] leading-none transition-opacity duration-200",
-          isDisabled ? "text-dp-text-disabled" : isSelected ? "text-dp-primary-muted" : "text-dp-text-muted",
-          monthLabelVisible ? "opacity-100" : "opacity-0"
+        className={cx(
+          "dp-cell-month",
+          monthColorClass,
+          monthLabelVisible ? "dp-cell-month--visible" : "dp-cell-month--hidden"
         )}
       >
         {formatMonthAbbr(date)}
       </span>
-      <span className="text-[1em] leading-none">{formatDayNumber(date)}</span>
+      <span className="dp-cell-day">{formatDayNumber(date)}</span>
     </button>
   );
 }

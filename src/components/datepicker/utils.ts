@@ -139,3 +139,13 @@ export function isDateDisabled(
   if (maxDate && date > startOfDay(maxDate)) return true;
   return false;
 }
+
+/**
+ * Simple class name utility - joins truthy class strings.
+ * Replacement for cn()/clsx for this component.
+ */
+export function cx(
+  ...classes: (string | false | null | undefined)[]
+): string {
+  return classes.filter(Boolean).join(" ");
+}

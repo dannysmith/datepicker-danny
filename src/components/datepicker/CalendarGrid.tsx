@@ -242,86 +242,78 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
   const announcedMonth = format(selectedDate, "MMMM yyyy");
 
   return (
-    <div
-      className="mx-auto max-w-[340px]"
-      style={{ containerType: "inline-size" }}
-    >
-    <div
-      ref={fontSizeContainerRef}
-      className="flex flex-col"
-      style={{ fontSize: "clamp(10px, 5cqw, 14px)" }}
-    >
-      {/* Screen reader announcement for current month */}
-      <div
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      >
-        {announcedMonth}
-      </div>
-
-      {/* Day of week headers */}
-      <div role="row" className="grid grid-cols-7 gap-[0.14em] border-b border-dp-border pb-[0.57em]">
-        {WEEKDAY_HEADERS.map((day, index) => (
-          <div
-            key={day}
-            role="columnheader"
-            aria-label={WEEKDAY_FULL_NAMES[index]}
-            className="text-center text-[0.85em] font-medium text-dp-text-muted"
-          >
-            {day}
-          </div>
-        ))}
-      </div>
-
-      {/* Scrollable calendar area */}
-      <div className="relative">
+    <div className="dp-calendar-wrapper">
+      <div ref={fontSizeContainerRef} className="dp-calendar-inner">
+        {/* Screen reader announcement for current month */}
         <div
-          ref={containerRef}
-          id="datepicker-grid"
-          role="grid"
-          aria-label="Calendar"
-          className="h-[18.2em] overflow-auto"
-          style={{ scrollbarWidth: "none" }}
+          aria-live="polite"
+          aria-atomic="true"
+          className="dp-sr-only"
         >
-          <div
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              width: "100%",
-              position: "relative",
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualWeek) => (
-              <div
-                key={virtualWeek.key}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualWeek.size}px`,
-                  transform: `translateY(${virtualWeek.start}px)`,
-                }}
-              >
-                <WeekRow
-                  weekIndex={virtualWeek.index}
-                  selectedDate={selectedDate}
-                  today={today}
-                  minDate={minDate}
-                  maxDate={maxDate}
-                  showSelectedMonthLabel={showSelectedMonthLabel}
-                  isScrolling={isScrolling}
-                  onDateSelect={onDateSelect}
-                />
-              </div>
-            ))}
-          </div>
+          {announcedMonth}
         </div>
 
-        {/* Month overlay */}
-        <MonthOverlay monthName={visibleMonth} isVisible={isScrolling} />
+        {/* Day of week headers */}
+        <div role="row" className="dp-weekday-row">
+          {WEEKDAY_HEADERS.map((day, index) => (
+            <div
+              key={day}
+              role="columnheader"
+              aria-label={WEEKDAY_FULL_NAMES[index]}
+              className="dp-weekday-label"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Scrollable calendar area */}
+        <div className="dp-scroll-wrapper">
+          <div
+            ref={containerRef}
+            id="datepicker-grid"
+            role="grid"
+            aria-label="Calendar"
+            className="dp-scroll-area"
+          >
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualWeek) => (
+                <div
+                  key={virtualWeek.key}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: `${virtualWeek.size}px`,
+                    transform: `translateY(${virtualWeek.start}px)`,
+                  }}
+                >
+                  <WeekRow
+                    weekIndex={virtualWeek.index}
+                    selectedDate={selectedDate}
+                    today={today}
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    showSelectedMonthLabel={showSelectedMonthLabel}
+                    isScrolling={isScrolling}
+                    onDateSelect={onDateSelect}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Month overlay */}
+          <MonthOverlay monthName={visibleMonth} isVisible={isScrolling} />
+        </div>
       </div>
-    </div>
     </div>
   );
 });

@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
 import * as chrono from "chrono-node";
-import { cn } from "@/lib/utils";
 import {
   format,
   isToday,
@@ -9,7 +8,7 @@ import {
   differenceInDays,
   startOfDay,
 } from "date-fns";
-import { isDateDisabled } from "./utils";
+import { isDateDisabled, cx } from "./utils";
 import { expandPartialInput, scoreResult } from "./fuzzyDateParser";
 
 interface FuzzySearchResultsProps {
@@ -154,7 +153,7 @@ export function FuzzySearchResults({
         id="datepicker-search-results"
         role="listbox"
         aria-label="Search results"
-        className="py-8 text-center text-sm text-dp-text-muted"
+        className="dp-search-empty"
       >
         No dates found
       </div>
@@ -166,38 +165,43 @@ export function FuzzySearchResults({
       id="datepicker-search-results"
       role="listbox"
       aria-label="Search results"
-      className="flex flex-col"
+      className="dp-search-results"
     >
       {results.map((result, index) => {
         const disabled = isDateDisabled(result.date, minDate, maxDate);
+        const isSelected = index === selectedIndex;
         // Full date for screen reader announcement
         const fullDateLabel = format(result.date, "EEEE, MMMM d, yyyy");
+
+        // Determine item state class
+        const stateClass = disabled
+          ? "dp-search-item--disabled"
+          : isSelected
+            ? "dp-search-item--selected"
+            : "dp-search-item--default";
+
+        // Determine secondary text class
+        const secondaryClass = disabled
+          ? "dp-search-item-secondary--disabled"
+          : isSelected
+            ? "dp-search-item-secondary--selected"
+            : "dp-search-item-secondary--default";
+
         return (
           <button
             key={result.date.getTime()}
             type="button"
             role="option"
             id={`search-result-${index}`}
-            aria-selected={index === selectedIndex}
+            aria-selected={isSelected}
             aria-disabled={disabled || undefined}
             aria-label={`${result.label}, ${fullDateLabel}`}
             disabled={disabled}
             onClick={() => !disabled && onDateSelect(result.date)}
-            className={cn(
-              "flex items-center justify-between px-3 py-2 text-sm",
-              "rounded-md transition-colors",
-              disabled && "cursor-not-allowed text-dp-text-disabled",
-              !disabled && index === selectedIndex && "bg-dp-primary text-dp-primary-fg",
-              !disabled && index !== selectedIndex && "text-dp-text-secondary hover:bg-dp-elevated"
-            )}
+            className={cx("dp-search-item", stateClass)}
           >
             <span>{result.label}</span>
-            <span
-              className={cn(
-                "text-xs",
-                disabled ? "text-dp-text-disabled" : index === selectedIndex ? "text-dp-primary-muted" : "text-dp-text-muted"
-              )}
-            >
+            <span className={cx("dp-search-item-secondary", secondaryClass)}>
               {isToday(result.date)
                 ? format(result.date, "d MMM")
                 : result.relativeText === "today" ||

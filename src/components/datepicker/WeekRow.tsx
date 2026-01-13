@@ -1,6 +1,5 @@
-import { cn } from "@/lib/utils";
 import { DateCell } from "./DateCell";
-import { getWeekDays, areSameDay, isFirstOfMonth, isDateDisabled } from "./utils";
+import { getWeekDays, areSameDay, isFirstOfMonth, isDateDisabled, cx } from "./utils";
 
 interface WeekRowProps {
   weekIndex: number;
@@ -29,9 +28,9 @@ export function WeekRow({
   return (
     <div
       role="row"
-      className={cn(
-        "grid w-full grid-cols-7 gap-[0.14em]",
-        hasMonthStart && "border-t border-dp-border-muted/50"
+      className={cx(
+        "dp-week-row",
+        hasMonthStart && "dp-week-row--month-start"
       )}
     >
       {days.map((date, i) => (
