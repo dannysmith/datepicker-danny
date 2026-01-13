@@ -32,7 +32,7 @@ export function DatePicker({
     (date: Date) => {
       const normalized = normalizeDate(date);
       setSelectedDate(normalized);
-      onChange(normalized);
+      onChange?.(normalized);
     },
     [onChange]
   );
@@ -42,7 +42,7 @@ export function DatePicker({
     (date: Date) => {
       const normalized = normalizeDate(date);
       setSelectedDate(normalized);
-      onChange(normalized);
+      onChange?.(normalized);
       onCommit?.(normalized);
       setQuery(""); // Clear search after selection
       inputRef.current?.focus();

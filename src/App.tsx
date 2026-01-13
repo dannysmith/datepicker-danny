@@ -43,10 +43,10 @@ function HeroSection() {
     <section className="flex flex-col items-center gap-8 py-16">
       <div className="text-center space-y-3">
         <h1 className="text-4xl font-semibold tracking-tight text-zinc-100">
-          DatePicker
+          Danny's DatePicker
         </h1>
         <p className="text-zinc-400">
-          Natural language input · Infinite scroll · Keyboard navigation
+          React Datepicker with natural language input, infinite scroll and decent keyboard navigation. Built by <a href="https://danny.is" className="text-blue-600 hover:underline">Danny Smith</a>.
         </p>
       </div>
 
@@ -64,7 +64,6 @@ function HeroSection() {
           <PopoverContent className="w-[240px]">
             <DatePicker
               value={date}
-              onChange={() => {}}
               onCommit={handleCommit}
               placeholder="Select date"
             />
@@ -254,7 +253,7 @@ function ConstraintsSection() {
 function PropsSection() {
   const props = [
     { name: "value", type: "Date", required: false, description: "The currently selected date. Defaults to today." },
-    { name: "onChange", type: "(date: Date) => void", required: true, description: "Callback fired on any date change, including keyboard navigation." },
+    { name: "onChange", type: "(date: Date) => void", required: false, description: "Callback fired on any date change, including keyboard navigation." },
     { name: "onCommit", type: "(date: Date) => void", required: false, description: "Callback fired only on explicit selection (click or Enter). Useful for popovers." },
     { name: "minDate", type: "Date", required: false, description: "Minimum selectable date. Earlier dates are disabled." },
     { name: "maxDate", type: "Date", required: false, description: "Maximum selectable date. Later dates are disabled." },
