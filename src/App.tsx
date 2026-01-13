@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { addDays, format } from "date-fns";
 import { highlight } from "sugar-high";
-import { DatePicker } from "@/components/datepicker";
+import { DatePicker } from "../lib";
 import {
   Popover,
   PopoverTrigger,
@@ -79,7 +79,8 @@ function HeroSection() {
 
 // Code example section
 function CodeSection() {
-  const code = `import { DatePicker } from '@your-org/datepicker';
+  const code = `import { DatePicker } from '@dannysmith/datepicker';
+import '@dannysmith/datepicker/styles.css';
 
 function MyComponent() {
   const [date, setDate] = useState(new Date());

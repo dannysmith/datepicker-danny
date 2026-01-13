@@ -4,7 +4,7 @@ import { FuzzySearchResults } from "./FuzzySearch";
 import { normalizeDate, getToday, isDateDisabled } from "./utils";
 import { format } from "date-fns";
 import type { DatePickerProps } from "./types";
-import "./datepicker.css";
+import "./styles.css";
 
 export function DatePicker({
   value,

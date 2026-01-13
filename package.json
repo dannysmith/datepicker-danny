@@ -1,40 +1,87 @@
 {
-  "name": "datepicker-danny",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@dannysmith/datepicker",
+  "version": "0.1.0",
+  "description": "React date picker with natural language input and infinite scroll",
   "type": "module",
+  "main": "./dist-lib/index.cjs",
+  "module": "./dist-lib/index.js",
+  "types": "./dist-lib/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist-lib/index.d.ts",
+        "default": "./dist-lib/index.js"
+      },
+      "require": {
+        "types": "./dist-lib/index.d.cts",
+        "default": "./dist-lib/index.cjs"
+      }
+    },
+    "./styles.css": "./dist-lib/styles.css"
+  },
+  "files": [
+    "dist-lib"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "bun run build:lib && bun run build:demo",
+    "build:lib": "tsup",
+    "build:demo": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dannysmith/datepicker-danny.git"
+  },
+  "keywords": [
+    "react",
+    "datepicker",
+    "date-picker",
+    "calendar",
+    "natural-language",
+    "fuzzy-search"
+  ],
+  "author": "Danny Smith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dannysmith/datepicker-danny/issues"
+  },
+  "homepage": "https://dannysmith.github.io/datepicker-danny",
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
-    "@fontsource-variable/inter": "^5.2.8",
-    "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-virtual": "^3.13.18",
     "chrono-node": "^2.9.0",
+    "date-fns": "^4.1.0"
+  },
+  "devDependencies": {
+    "@base-ui/react": "^1.0.0",
+    "@eslint/js": "^9.39.1",
+    "@fontsource-variable/inter": "^5.2.8",
+    "@tailwindcss/vite": "^4.1.17",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "date-fns": "^4.1.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sugar-high": "^0.9.5",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
-    "tw-animate-css": "^1.4.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@types/node": "^24.10.1",
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
-    "eslint": "^9.39.1",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
+    "tsup": "^8.5.1",
+    "tw-animate-css": "^1.4.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

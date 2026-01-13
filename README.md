@@ -1,6 +1,8 @@
-# DatePicker
+# @dannysmith/datepicker
 
 A React date picker component with natural language input and infinite scroll.
+
+[Demo](https://dannysmith.github.io/datepicker-danny)
 
 ## Features
 
@@ -12,10 +14,21 @@ A React date picker component with natural language input and infinite scroll.
 - **Min/max dates**: Optionally constrain selectable dates to a range
 - **Customizable colors**: Theme via CSS variables to match your app's design
 
+## Installation
+
+```bash
+npm install @dannysmith/datepicker
+# or
+pnpm add @dannysmith/datepicker
+# or
+bun add @dannysmith/datepicker
+```
+
 ## Usage
 
 ```tsx
-import { DatePicker } from './components/datepicker';
+import { DatePicker } from '@dannysmith/datepicker';
+import '@dannysmith/datepicker/styles.css';
 
 function App() {
   const [date, setDate] = useState<Date>(new Date());
@@ -79,27 +92,10 @@ The default theme is dark. For light mode, override the variables with lighter v
 
 ## Dependencies
 
-- React 18+
+- React 18+ or 19
 - [chrono-node](https://github.com/wanasit/chrono) - Natural language date parsing
 - [date-fns](https://date-fns.org/) - Date utilities
 - [@tanstack/react-virtual](https://tanstack.com/virtual) - Virtualized scrolling
-- [Tailwind CSS v4](https://tailwindcss.com/) - Styling
-
-## Component Structure
-
-```
-src/components/datepicker/
-├── DatePicker.tsx       # Main component with input and mode switching
-├── CalendarGrid.tsx     # Virtualized infinite scroll calendar
-├── WeekRow.tsx          # Single week row
-├── DateCell.tsx         # Individual date cell
-├── FuzzySearch.tsx      # Search results display
-├── MonthOverlay.tsx     # Month label shown while scrolling
-├── fuzzyDateParser.ts   # Input expansion and scoring logic
-├── levenshtein.ts       # String distance for typo tolerance
-├── utils.ts             # Date utilities
-└── types.ts             # TypeScript types
-```
 
 ## License
 
