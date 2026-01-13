@@ -6,29 +6,47 @@
 
 Use `bun` for this project, not `pnpm` or `npm`.
 
-## Project Direction
+## Project Structure
 
-This started as a throwaway prototype but is being turned into a proper package:
+- `lib/` — Component source code (published to npm as `@dannysmith/datepicker`)
+- `src/` — Demo site source (deployed to GitHub Pages)
+- `dist-lib/` — Library build output (git-ignored)
+- `dist/` — Demo site build output (git-ignored)
 
-1. **npm package**: Make the datepicker importable into other React projects
-2. **Demo site**: A small site deployable via GitHub Pages to showcase the component
+## Scripts
 
-## Task List
+```bash
+bun run dev          # Run demo site locally
+bun run build:lib    # Build npm package → dist-lib/
+bun run build:demo   # Build demo site → dist/
+bun run build        # Build both
+```
 
-- [x] Review datepicker for accessibility and tab navigation etc.
-- [x] Create a demo page (in App.tsx) which shows the picker used in a variety of ways
-- [x] Ensure the datepicker is robust and self-contained in various circumstances
-- [x] Remove all unnecessary shadcn from this project
-- [x] Simplify the rest of this project so it has the minimum required to contain a component and render a mini-demo with vite
-- [x] Separate the DatePicker component into a structure where it can be imported as an NPM package and published to NPM
-- [x] Set up GH Action to build the demo page and deploy to GitHub Pages
-- [x] Set up release process for publishing to NPM via GH Action and GH releases
-- [x] Final cleanup and README update
+## Releasing to npm
 
-## Next Steps (Manual)
+Run the release script:
 
-See `task-publishing.local.md` for setup instructions. Before first release:
+```bash
+./scripts/release.sh
+```
 
-1. Manually publish to npm: `npm publish --access public`
-2. Configure Trusted Publisher on npmjs.com
-3. Enable GitHub Pages (Settings → Pages → Source: GitHub Actions)
+This will:
+1. Run lint and build checks
+2. Prompt for new version number
+3. Update package.json
+4. Create a signed git tag
+5. Push to GitHub
+
+Pushing the tag triggers the GitHub Action (`.github/workflows/publish.yml`) which publishes to npm using OIDC Trusted Publishing (no secrets needed).
+
+## Demo Site Deployment
+
+The demo site auto-deploys to GitHub Pages on every push to `main` via `.github/workflows/deploy-demo.yml`.
+
+Live at: https://dannysmith.github.io/datepicker-danny
+
+## Build Tools
+
+- **tsup** — Builds the library (ESM, CJS, TypeScript declarations)
+- **Vite** — Builds the demo site
+- **tsconfig.lib.json** — TypeScript config for library build
