@@ -1,16 +1,14 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { addDays, format } from "date-fns";
+import { highlight } from "sugar-high";
 import { DatePicker } from "@/components/datepicker";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
-// Calendar icon component
 function CalendarIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -31,84 +29,8 @@ function CalendarIcon({ className }: { className?: string }) {
   );
 }
 
-// Gradient divider between sections
-function SectionDivider() {
-  return (
-    <div className="flex items-center justify-center py-4">
-      <div
-        className="h-px w-32"
-        style={{
-          background: 'linear-gradient(90deg, transparent, oklch(0.546 0.245 262.88 / 0.5), transparent)'
-        }}
-      />
-    </div>
-  );
-}
-
-// Section wrapper component
-function Section({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-8">
-      <div className="space-y-3 text-center">
-        <h2
-          className="text-2xl font-semibold tracking-tight"
-          style={{
-            background: 'linear-gradient(135deg, oklch(0.623 0.214 259.82), oklch(0.546 0.245 262.88))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          {title}
-        </h2>
-        {description && (
-          <p className="mx-auto max-w-3xl text-sm text-zinc-400 leading-relaxed">{description}</p>
-        )}
-      </div>
-      {children}
-    </section>
-  );
-}
-
-// Demo card for individual examples
-function DemoCard({
-  label,
-  description,
-  children,
-}: {
-  label: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div
-      className="space-y-4 rounded-xl p-5 transition-all duration-300 hover:bg-zinc-800/30"
-      style={{
-        background: 'linear-gradient(135deg, rgba(39, 39, 42, 0.3), rgba(24, 24, 27, 0.5))',
-        border: '1px solid rgba(63, 63, 70, 0.4)',
-      }}
-    >
-      <div className="space-y-1">
-        <p className="text-sm font-medium text-zinc-200">{label}</p>
-        {description && (
-          <p className="text-xs text-zinc-500 leading-relaxed">{description}</p>
-        )}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-// Popover DatePicker Demo - isolated component with its own state
-function PopoverDatePickerDemo() {
+// Hero section with popover demo
+function HeroSection() {
   const [date, setDate] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
 
@@ -118,352 +40,323 @@ function PopoverDatePickerDemo() {
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button variant="outline" className="justify-start gap-2 text-base h-10 px-4">
-            <CalendarIcon className="size-5 text-zinc-400" />
-            <span>{format(date, "d MMM")}</span>
-          </Button>
-        }
-      />
-      <PopoverContent className="w-[200px]">
-        <DatePicker
-          value={date}
-          onChange={() => {
-            // Don't update the actual date during navigation - only on commit
-          }}
-          onCommit={handleCommit}
-          placeholder="Select date"
-        />
-      </PopoverContent>
-    </Popover>
+    <section className="flex flex-col items-center gap-8 py-16">
+      <div className="text-center space-y-3">
+        <h1 className="text-4xl font-semibold tracking-tight text-zinc-100">
+          DatePicker
+        </h1>
+        <p className="text-zinc-400">
+          Natural language input · Infinite scroll · Keyboard navigation
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center gap-3">
+        <span className="text-sm text-zinc-500">Try it out</span>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger
+            render={
+              <Button className="gap-2 text-base h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white">
+                <CalendarIcon className="size-5" />
+                <span>{format(date, "d MMM")}</span>
+              </Button>
+            }
+          />
+          <PopoverContent className="w-[240px]">
+            <DatePicker
+              value={date}
+              onChange={() => {}}
+              onCommit={handleCommit}
+              placeholder="Select date"
+            />
+          </PopoverContent>
+        </Popover>
+        <p className="text-xs text-zinc-600">
+          Type "tomorrow", "next friday", or "in 2 weeks"
+        </p>
+      </div>
+    </section>
   );
 }
 
-// Inline DatePicker Demo - isolated component for container-based examples
-function InlineDatePickerDemo({
-  label,
-  description,
-}: {
-  label: string;
-  description: string;
-}) {
-  const [date, setDate] = useState<Date>(new Date());
+// Code example section
+function CodeSection() {
+  const code = `import { DatePicker } from '@your-org/datepicker';
 
-  // Extract pixel width from label for actual container sizing
-  const pixelWidth = label.match(/\((\d+)px\)/)?.[1] || "340";
+function MyComponent() {
+  const [date, setDate] = useState(new Date());
 
   return (
-    <DemoCard label={label} description={description}>
+    <DatePicker
+      value={date}
+      onChange={setDate}
+      placeholder="When"
+    />
+  );
+}`;
+
+  return (
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-4">Usage</h2>
+      <pre
+        className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 text-sm overflow-x-auto"
+        style={{
+          '--sh-keyword': '#f472b6',
+          '--sh-string': '#4ade80',
+          '--sh-identifier': '#e4e4e7',
+          '--sh-property': '#60a5fa',
+          '--sh-entity': '#facc15',
+          '--sh-jsxliterals': '#d4d4d8',
+          '--sh-sign': '#71717a',
+          '--sh-class': '#facc15',
+        } as React.CSSProperties}
+      >
+        <code dangerouslySetInnerHTML={{ __html: highlight(code) }} />
+      </pre>
+    </section>
+  );
+}
+
+// Resizable container demo
+function ResizableSection() {
+  const [date, setDate] = useState<Date>(new Date());
+  const [width, setWidth] = useState(320);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+
+  // Min: datepicker 200px + container padding (p-4 = 16px × 2 = 32px) = 232px
+  const minWidth = 232;
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current || !containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const parentWidth = containerRef.current.parentElement?.clientWidth || 700;
+      const newWidth = Math.max(minWidth, Math.min(parentWidth, e.clientX - rect.left));
+      setWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      isDragging.current = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  const handleMouseDown = () => {
+    isDragging.current = true;
+    document.body.style.cursor = "ew-resize";
+    document.body.style.userSelect = "none";
+  };
+
+  return (
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-2">Responsive sizing</h2>
+      <p className="text-sm text-zinc-500 mb-6">
+        Drag the right edge to resize. The component scales smoothly at any width.
+      </p>
+
       <div className="flex justify-center">
-        <div style={{ width: `${pixelWidth}px` }}>
+        <div
+          ref={containerRef}
+          className="relative bg-zinc-900/50 border border-zinc-800 rounded-lg p-4"
+          style={{ width }}
+        >
           <DatePicker
             value={date}
             onChange={setDate}
             placeholder="Select date"
           />
+
+          {/* Resize handle */}
+          <div
+            onMouseDown={handleMouseDown}
+            className="absolute top-0 right-0 w-3 h-full cursor-ew-resize flex items-center justify-center group"
+          >
+            <div className="w-1 h-8 bg-zinc-700 rounded-full group-hover:bg-zinc-500 transition-colors" />
+          </div>
         </div>
       </div>
-    </DemoCard>
+
+      <p className="text-center text-xs text-zinc-600 mt-3">{width}px</p>
+    </section>
   );
 }
 
-// Constrained DatePicker Demo - isolated component for minDate/maxDate examples
-function ConstrainedDatePickerDemo({
-  label,
-  description,
-  minDate,
-  maxDate,
-  placeholder,
-}: {
-  label: string;
-  description: string;
-  minDate?: Date;
-  maxDate?: Date;
-  placeholder: string;
-}) {
-  const [date, setDate] = useState<Date>(new Date());
+// Date constraints demo
+function ConstraintsSection() {
+  const today = new Date();
+  const weekFromNow = addDays(today, 7);
+
+  const [futureDate, setFutureDate] = useState<Date>(today);
+  const [pastDate, setPastDate] = useState<Date>(today);
+  const [windowDate, setWindowDate] = useState<Date>(today);
 
   return (
-    <DemoCard label={label} description={description}>
-      <DatePicker
-        value={date}
-        onChange={setDate}
-        minDate={minDate}
-        maxDate={maxDate}
-        placeholder={placeholder}
-      />
-    </DemoCard>
-  );
-}
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-2">Date constraints</h2>
+      <p className="text-sm text-zinc-500 mb-6">
+        Use minDate and maxDate props to limit selectable dates.
+      </p>
 
-// Form DatePicker Demo - isolated component
-function FormDatePickerDemo({ minDate }: { minDate: Date }) {
-  const [formDate, setFormDate] = useState<Date>(new Date());
-
-  return (
-    <Card
-      className="p-6"
-      style={{
-        background: 'linear-gradient(135deg, rgba(39, 39, 42, 0.3), rgba(24, 24, 27, 0.5))',
-        border: '1px solid rgba(63, 63, 70, 0.4)',
-        boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.2)',
-      }}
-    >
-      <form
-        className="space-y-6"
-        onSubmit={(e) => {
-          e.preventDefault();
-          alert(`Form submitted with date: ${format(formDate, "PPP")}`);
-        }}
-      >
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="event-name">Event Name</Label>
-            <input
-              id="event-name"
-              type="text"
-              placeholder="Enter event name"
-              className="flex h-9 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600/50"
-            />
+      <div className="grid gap-6 sm:grid-cols-3">
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium text-zinc-300">Future only</p>
+            <p className="text-xs text-zinc-500">minDate = today</p>
           </div>
-
-          <div className="space-y-2">
-            <Label>Event Date</Label>
-            <DatePicker
-              value={formDate}
-              onChange={setFormDate}
-              minDate={minDate}
-              placeholder="When is this event?"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <textarea
-              id="notes"
-              placeholder="Any additional notes..."
-              rows={3}
-              className="flex w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-600/50"
-            />
-          </div>
+          <DatePicker
+            value={futureDate}
+            onChange={setFutureDate}
+            minDate={today}
+            placeholder="Select future date"
+          />
         </div>
 
-        <Button type="submit" className="w-full">
-          Create Event
-        </Button>
-      </form>
-    </Card>
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium text-zinc-300">Past only</p>
+            <p className="text-xs text-zinc-500">maxDate = today</p>
+          </div>
+          <DatePicker
+            value={pastDate}
+            onChange={setPastDate}
+            maxDate={today}
+            placeholder="Select past date"
+          />
+        </div>
+
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm font-medium text-zinc-300">7-day window</p>
+            <p className="text-xs text-zinc-500">minDate + maxDate</p>
+          </div>
+          <DatePicker
+            value={windowDate}
+            onChange={setWindowDate}
+            minDate={today}
+            maxDate={weekFromNow}
+            placeholder="Select within window"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Props documentation
+function PropsSection() {
+  const props = [
+    { name: "value", type: "Date", required: false, description: "The currently selected date. Defaults to today." },
+    { name: "onChange", type: "(date: Date) => void", required: true, description: "Callback fired on any date change, including keyboard navigation." },
+    { name: "onCommit", type: "(date: Date) => void", required: false, description: "Callback fired only on explicit selection (click or Enter). Useful for popovers." },
+    { name: "minDate", type: "Date", required: false, description: "Minimum selectable date. Earlier dates are disabled." },
+    { name: "maxDate", type: "Date", required: false, description: "Maximum selectable date. Later dates are disabled." },
+    { name: "placeholder", type: "string", required: false, description: "Placeholder text for the search input. Defaults to \"When\"." },
+  ];
+
+  return (
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-4">Props</h2>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-zinc-800 text-left">
+              <th className="py-3 pr-4 font-medium text-zinc-400">Prop</th>
+              <th className="py-3 pr-4 font-medium text-zinc-400">Type</th>
+              <th className="py-3 pr-4 font-medium text-zinc-400">Required</th>
+              <th className="py-3 font-medium text-zinc-400">Description</th>
+            </tr>
+          </thead>
+          <tbody className="text-zinc-300">
+            {props.map((prop) => (
+              <tr key={prop.name} className="border-b border-zinc-800/50">
+                <td className="py-3 pr-4 font-mono text-zinc-100">{prop.name}</td>
+                <td className="py-3 pr-4 font-mono text-xs text-zinc-400">{prop.type}</td>
+                <td className="py-3 pr-4">{prop.required ? "Yes" : "No"}</td>
+                <td className="py-3 text-zinc-400">{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+// CSS variables documentation
+function CSSVariablesSection() {
+  const variables = [
+    { name: "--dp-font", default: "inherit", description: "Font family" },
+    { name: "--dp-bg", default: "oklch(0.21 ...)", description: "Container background" },
+    { name: "--dp-elevated", default: "oklch(0.27 ...)", description: "Input and hover backgrounds" },
+    { name: "--dp-text", default: "oklch(0.97 ...)", description: "Primary text color" },
+    { name: "--dp-text-secondary", default: "oklch(0.79 ...)", description: "Secondary text color" },
+    { name: "--dp-text-muted", default: "oklch(0.55 ...)", description: "Muted text and placeholders" },
+    { name: "--dp-text-disabled", default: "oklch(0.37 ...)", description: "Disabled state text" },
+    { name: "--dp-border", default: "oklch(0.27 ...)", description: "Primary borders" },
+    { name: "--dp-border-muted", default: "oklch(0.37 ...)", description: "Subtle borders" },
+    { name: "--dp-primary", default: "oklch(0.55 ...)", description: "Selection background" },
+    { name: "--dp-primary-fg", default: "oklch(1 0 0)", description: "Text on selection" },
+    { name: "--dp-primary-muted", default: "oklch(0.88 ...)", description: "Secondary text on selection" },
+    { name: "--dp-accent", default: "oklch(0.62 ...)", description: "Today marker color" },
+    { name: "--dp-ring", default: "oklch(0.44 ...)", description: "Focus ring color" },
+  ];
+
+  return (
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-2">CSS Variables</h2>
+      <p className="text-sm text-zinc-500 mb-4">
+        All variables are optional. Override them in your CSS to customize the theme.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-zinc-800 text-left">
+              <th className="py-3 pr-4 font-medium text-zinc-400">Variable</th>
+              <th className="py-3 pr-4 font-medium text-zinc-400">Default</th>
+              <th className="py-3 font-medium text-zinc-400">Description</th>
+            </tr>
+          </thead>
+          <tbody className="text-zinc-300">
+            {variables.map((v) => (
+              <tr key={v.name} className="border-b border-zinc-800/50">
+                <td className="py-3 pr-4 font-mono text-xs text-zinc-100">{v.name}</td>
+                <td className="py-3 pr-4 font-mono text-xs text-zinc-500">{v.default}</td>
+                <td className="py-3 text-zinc-400">{v.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
 export function App() {
-  // Date constraints (shared constants, not state)
-  const today = new Date();
-  const weekFromNow = addDays(today, 7);
-
   return (
-    <div
-      className="relative min-h-screen px-8 py-16"
-      style={{
-        background: 'linear-gradient(180deg, #09090b 0%, #0c0c0f 50%, #09090b 100%)',
-      }}
-    >
-      {/* Background glow effects */}
-      <div
-        className="pointer-events-none fixed inset-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        {/* Top-left blue glow */}
-        <div
-          className="absolute -left-32 -top-32 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ background: 'oklch(0.546 0.245 262.88)' }}
-        />
-        {/* Bottom-right subtle glow */}
-        <div
-          className="absolute -bottom-48 -right-48 h-[500px] w-[500px] rounded-full opacity-10 blur-3xl"
-          style={{ background: 'oklch(0.623 0.214 259.82)' }}
-        />
-        {/* Center subtle accent */}
-        <div
-          className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-5 blur-3xl"
-          style={{ background: 'oklch(0.546 0.245 262.88)' }}
-        />
-      </div>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+      <div className="mx-auto max-w-3xl px-6">
+        <HeroSection />
+        <hr className="border-zinc-800" />
+        <CodeSection />
+        <hr className="border-zinc-800" />
+        <ResizableSection />
+        <hr className="border-zinc-800" />
+        <ConstraintsSection />
+        <hr className="border-zinc-800" />
+        <PropsSection />
+        <hr className="border-zinc-800" />
+        <CSSVariablesSection />
 
-      <div className="relative mx-auto max-w-6xl space-y-24">
-        {/* Header */}
-        <header className="space-y-6 text-center">
-          <div className="space-y-4">
-            <h1
-              className="text-5xl font-bold tracking-tight sm:text-6xl"
-              style={{
-                background: 'linear-gradient(135deg, oklch(0.7 0.18 259.82), oklch(0.546 0.245 262.88), oklch(0.5 0.2 270))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              DatePicker
-            </h1>
-            <p className="text-lg font-medium text-zinc-300">
-              Natural language input • Infinite scroll • Beautiful by default
-            </p>
-          </div>
-          <p className="mx-auto max-w-xl text-base text-zinc-500 leading-relaxed">
-            Try typing <span className="rounded-md px-2 py-0.5 font-mono text-sm" style={{ background: 'oklch(0.546 0.245 262.88 / 0.15)', color: 'oklch(0.7 0.18 259.82)' }}>"tomorrow"</span>, <span className="rounded-md px-2 py-0.5 font-mono text-sm" style={{ background: 'oklch(0.546 0.245 262.88 / 0.15)', color: 'oklch(0.7 0.18 259.82)' }}>"next friday"</span>, or <span className="rounded-md px-2 py-0.5 font-mono text-sm" style={{ background: 'oklch(0.546 0.245 262.88 / 0.15)', color: 'oklch(0.7 0.18 259.82)' }}>"in 3 weeks"</span>
-          </p>
-        </header>
-
-        <SectionDivider />
-
-        {/* Section 1: Popover Trigger */}
-        <Section
-          title="Popover Integration"
-          description="The most common use case - a button that opens the picker in a popover. The date only updates when you explicitly commit your selection (click or press Enter)."
-        >
-          <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div className="grid place-items-center">
-              <PopoverDatePickerDemo />
-            </div>
-            <div className="flex justify-center lg:justify-start">
-              <div className="w-full max-w-xl">
-                <div
-                  className="overflow-hidden rounded-xl"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(39, 39, 42, 0.4), rgba(24, 24, 27, 0.6))',
-                    border: '1px solid rgba(63, 63, 70, 0.5)',
-                    boxShadow: '0 4px 24px -4px rgba(0, 0, 0, 0.3)',
-                  }}
-                >
-                  <div
-                    className="flex items-center gap-2 border-b px-4 py-2.5"
-                    style={{ borderColor: 'rgba(63, 63, 70, 0.5)' }}
-                  >
-                    <div className="flex gap-1.5">
-                      <div className="h-2.5 w-2.5 rounded-full bg-zinc-600" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-zinc-600" />
-                      <div className="h-2.5 w-2.5 rounded-full bg-zinc-600" />
-                    </div>
-                    <span className="text-xs text-zinc-500">example.tsx</span>
-                  </div>
-                  <pre className="p-5 text-sm leading-relaxed overflow-x-auto">
-                    <code className="text-zinc-300">{`const [date, setDate] = useState(new Date());
-const [open, setOpen] = useState(false);
-
-<Popover open={open} onOpenChange={setOpen}>
-  <PopoverTrigger render={<Button>...</Button>} />
-  <PopoverContent className="w-[200px]">
-    <DatePicker
-      value={date}
-      onChange={() => {}}
-      onCommit={(newDate) => {
-        setDate(newDate);
-        setOpen(false);
-      }}
-    />
-  </PopoverContent>
-</Popover>`}</code>
-                  </pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Section>
-
-        <SectionDivider />
-
-        {/* Section 2: Container Sizes */}
-        <Section
-          title="Container Size Variations"
-          description="The DatePicker automatically adapts to different container widths. Font sizes and spacing scale proportionally to maintain readability at any size."
-        >
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <InlineDatePickerDemo
-              label="Wide (500px)"
-              description="Spacious layout with generous spacing"
-            />
-
-            <InlineDatePickerDemo
-              label="Standard (340px)"
-              description="Recommended default width for most use cases"
-            />
-
-            <InlineDatePickerDemo
-              label="Compact (300px)"
-              description="Fits well in sidebars and narrow columns"
-            />
-
-            <InlineDatePickerDemo
-              label="Minimal (260px)"
-              description="Practical minimum before noticeable constraints"
-            />
-
-            <InlineDatePickerDemo
-              label="Tiny (200px)"
-              description="Extreme minimum - font automatically scales down"
-            />
-          </div>
-        </Section>
-
-        <SectionDivider />
-
-        {/* Section 3: Date Constraints */}
-        <Section
-          title="Date Constraints"
-          description="Using minDate and maxDate props to limit selectable dates. Disabled dates are dimmed and cannot be selected."
-        >
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <ConstrainedDatePickerDemo
-              label="Future Dates Only"
-              description={`Only dates from ${format(today, "MMM d, yyyy")} onwards are selectable`}
-              minDate={today}
-              placeholder="Select future date"
-            />
-
-            <ConstrainedDatePickerDemo
-              label="Past Dates Only"
-              description={`Only dates up to ${format(today, "MMM d, yyyy")} are selectable`}
-              maxDate={today}
-              placeholder="Select past date"
-            />
-
-            <ConstrainedDatePickerDemo
-              label="7-Day Window"
-              description={`Only dates between ${format(today, "MMM d")} and ${format(weekFromNow, "MMM d, yyyy")} are selectable`}
-              minDate={today}
-              maxDate={weekFromNow}
-              placeholder="Select within window"
-            />
-          </div>
-        </Section>
-
-        <SectionDivider />
-
-        {/* Section 4: Form Integration */}
-        <Section
-          title="Form Integration"
-          description="How the picker looks in a typical form context with other form fields."
-        >
-          <div className="flex justify-center">
-            <div className="w-full max-w-lg">
-              <FormDatePickerDemo minDate={today} />
-            </div>
-          </div>
-        </Section>
-
-        {/* Footer */}
-        <footer className="pt-16 text-center">
-          <div
-            className="mx-auto mb-6 h-px w-48"
-            style={{
-              background: 'linear-gradient(90deg, transparent, oklch(0.546 0.245 262.88 / 0.3), transparent)'
-            }}
-          />
-          <p className="text-sm text-zinc-600">
-            Built with React, Tailwind CSS, chrono-node, and @tanstack/react-virtual
-          </p>
+        <footer className="py-8 text-center text-xs text-zinc-600">
+          Built with React, date-fns, chrono-node, and @tanstack/react-virtual
         </footer>
       </div>
     </div>
