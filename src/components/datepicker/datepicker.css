@@ -1,24 +1,24 @@
 /*
  * DatePicker Component Styles
  *
- * All CSS variables are optional - fallback values are provided.
+ * All CSS variables are optional - defaults are set in .dp-root.
  * Override any --dp-* variable in your :root or parent element to customize.
  *
- * Available variables:
- *   --dp-font: Font family (default: inherit)
- *   --dp-bg: Container background
- *   --dp-elevated: Input/hover backgrounds
- *   --dp-text: Primary text color
- *   --dp-text-secondary: Secondary text color
- *   --dp-text-muted: Muted/placeholder text
- *   --dp-text-disabled: Disabled state text
- *   --dp-border: Primary border color
- *   --dp-border-muted: Subtle border color
- *   --dp-primary: Selection background
- *   --dp-primary-fg: Text on selection
- *   --dp-primary-muted: Secondary text on selection
- *   --dp-accent: Today marker color
- *   --dp-ring: Focus ring color
+ * Variables:
+ *   --dp-font          Font family (default: inherit)
+ *   --dp-bg            Container background
+ *   --dp-elevated      Input/hover backgrounds
+ *   --dp-text          Primary text color
+ *   --dp-text-secondary Secondary text color
+ *   --dp-text-muted    Muted/placeholder text
+ *   --dp-text-disabled Disabled state text
+ *   --dp-border        Primary border color
+ *   --dp-border-muted  Subtle border color
+ *   --dp-primary       Selection background
+ *   --dp-primary-fg    Text on selection
+ *   --dp-primary-muted Secondary text on selection
+ *   --dp-accent        Today marker color
+ *   --dp-ring          Focus ring color
  */
 
 /* ============================================
@@ -26,18 +26,45 @@
    ============================================ */
 
 .dp-root {
-  /* Minimal reset scoped to component */
+  /* Default values - override with --dp-* custom properties */
+  --_dp-font: var(--dp-font, inherit);
+  --_dp-bg: var(--dp-bg, oklch(0.21 0.006 285.89));
+  --_dp-elevated: var(--dp-elevated, oklch(0.274 0.006 286.03));
+  --_dp-text: var(--dp-text, oklch(0.967 0.001 286.38));
+  --_dp-text-secondary: var(--dp-text-secondary, oklch(0.788 0.01 286.18));
+  --_dp-text-muted: var(--dp-text-muted, oklch(0.553 0.016 285.94));
+  --_dp-text-disabled: var(--dp-text-disabled, oklch(0.366 0.014 285.79));
+  --_dp-border: var(--dp-border, oklch(0.274 0.006 286.03));
+  --_dp-border-muted: var(--dp-border-muted, oklch(0.366 0.014 285.79));
+  --_dp-primary: var(--dp-primary, oklch(0.546 0.245 262.88));
+  --_dp-primary-fg: var(--dp-primary-fg, oklch(1 0 0));
+  --_dp-primary-muted: var(--dp-primary-muted, oklch(0.882 0.059 254.13));
+  --_dp-accent: var(--dp-accent, oklch(0.623 0.214 259.82));
+  --_dp-ring: var(--dp-ring, oklch(0.442 0.017 285.79));
+
+  /* Derived colors using color-mix for opacity variants */
+  --_dp-elevated-50: color-mix(in oklch, var(--_dp-elevated) 50%, transparent);
+  --_dp-border-muted-50: color-mix(in oklch, var(--_dp-border-muted) 50%, transparent);
+  --_dp-text-secondary-80: color-mix(in oklch, var(--_dp-text-secondary) 80%, transparent);
+
+  /* Shared values */
+  --_dp-radius: 0.375rem;
+  --_dp-radius-lg: 0.5rem;
+  --_dp-transition: 0.15s ease;
+
+  /* Scoped reset */
   box-sizing: border-box;
-  font-family: var(--dp-font, inherit);
+  font-family: var(--_dp-font);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
 
-.dp-root *,
-.dp-root *::before,
-.dp-root *::after {
-  box-sizing: border-box;
+  /* Inherit box-sizing to all descendants */
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
+  }
 }
 
 /* Screen reader only */
@@ -61,9 +88,9 @@
   inline-size: 100%;
   min-inline-size: 200px;
   padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--dp-border, oklch(0.274 0.006 286.03));
-  background: var(--dp-bg, oklch(0.21 0.006 285.89));
+  border-radius: var(--_dp-radius-lg);
+  border: 1px solid var(--_dp-border);
+  background: var(--_dp-bg);
   box-shadow:
     0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
@@ -83,45 +110,45 @@
   inline-size: 100%;
   padding-block: 0.375rem;
   padding-inline: 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid var(--dp-border-muted, oklch(0.366 0.014 285.79));
-  background: var(--dp-elevated, oklch(0.274 0.006 286.03));
-  color: var(--dp-text, oklch(0.967 0.001 286.38));
+  border-radius: var(--_dp-radius);
+  border: 1px solid var(--_dp-border-muted);
+  background: var(--_dp-elevated);
+  color: var(--_dp-text);
   font-family: inherit;
   font-size: 0.875rem;
   line-height: 1.25rem;
   text-align: center;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
+  transition: border-color var(--_dp-transition), box-shadow var(--_dp-transition);
 
-.dp-input::placeholder {
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
-}
+  &::placeholder {
+    color: var(--_dp-text-muted);
+  }
 
-.dp-input:focus {
-  border-color: var(--dp-ring, oklch(0.442 0.017 285.79));
-  box-shadow: 0 0 0 1px var(--dp-ring, oklch(0.442 0.017 285.79));
+  &:focus {
+    border-color: var(--_dp-ring);
+    box-shadow: 0 0 0 1px var(--_dp-ring);
+  }
 }
 
 .dp-clear-btn {
   position: absolute;
   inset-inline-end: 0.5rem;
   inset-block-start: 50%;
-  transform: translateY(-50%);
+  translate: 0 -50%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: none;
   background: transparent;
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
+  color: var(--_dp-text-muted);
   cursor: pointer;
-  transition: color 0.15s;
-}
+  transition: color var(--_dp-transition);
 
-.dp-clear-btn:hover {
-  color: var(--dp-text-secondary, oklch(0.788 0.01 286.18));
+  &:hover {
+    color: var(--_dp-text-secondary);
+  }
 }
 
 /* ============================================
@@ -137,23 +164,26 @@
 .dp-calendar-inner {
   display: flex;
   flex-direction: column;
-  /* Font size scales with container width */
   font-size: clamp(10px, 5cqi, 14px);
 }
 
-.dp-weekday-row {
+.dp-weekday-row,
+.dp-week-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.14em;
+}
+
+.dp-weekday-row {
   padding-block-end: 0.57em;
-  border-block-end: 1px solid var(--dp-border, oklch(0.274 0.006 286.03));
+  border-block-end: 1px solid var(--_dp-border);
 }
 
 .dp-weekday-label {
   font-size: 0.85em;
   font-weight: 500;
   text-align: center;
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
+  color: var(--_dp-text-muted);
 }
 
 .dp-scroll-wrapper {
@@ -164,10 +194,10 @@
   block-size: 18.2em;
   overflow: auto;
   scrollbar-width: none;
-}
 
-.dp-scroll-area::-webkit-scrollbar {
-  display: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ============================================
@@ -175,14 +205,11 @@
    ============================================ */
 
 .dp-week-row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.14em;
   inline-size: 100%;
-}
 
-.dp-week-row--month-start {
-  border-block-start: 1px solid oklch(from var(--dp-border-muted, oklch(0.366 0.014 285.79)) l c h / 0.5);
+  &.dp-week-row--month-start {
+    border-block-start: 1px solid var(--_dp-border-muted-50);
+  }
 }
 
 /* ============================================
@@ -205,41 +232,33 @@
   font-size: inherit;
   outline: none;
   cursor: pointer;
-  transition: opacity 0.2s, background-color 0.15s;
+  transition: opacity 0.2s, background-color var(--_dp-transition);
+
+  /* Default and Today share hover style */
+  &:is(.dp-cell--default, .dp-cell--today):hover {
+    background: var(--_dp-elevated-50);
+  }
 }
 
-/* Default state */
 .dp-cell--default {
-  color: var(--dp-text-secondary, oklch(0.788 0.01 286.18));
+  color: var(--_dp-text-secondary);
 }
 
-.dp-cell--default:hover {
-  background: oklch(from var(--dp-elevated, oklch(0.274 0.006 286.03)) l c h / 0.5);
-}
-
-/* Today (not selected) */
 .dp-cell--today {
-  color: var(--dp-accent, oklch(0.623 0.214 259.82));
+  color: var(--_dp-accent);
   font-weight: 500;
 }
 
-.dp-cell--today:hover {
-  background: oklch(from var(--dp-elevated, oklch(0.274 0.006 286.03)) l c h / 0.5);
-}
-
-/* Selected */
 .dp-cell--selected {
-  background: var(--dp-primary, oklch(0.546 0.245 262.88));
-  color: var(--dp-primary-fg, oklch(1 0 0));
+  background: var(--_dp-primary);
+  color: var(--_dp-primary-fg);
 }
 
-/* Disabled */
 .dp-cell--disabled {
-  color: var(--dp-text-disabled, oklch(0.366 0.014 285.79));
+  color: var(--_dp-text-disabled);
   cursor: not-allowed;
 }
 
-/* Dimmed (during scroll) */
 .dp-cell--dimmed {
   opacity: 0.4;
 }
@@ -251,29 +270,28 @@
   font-size: 0.65em;
   line-height: 1;
   transition: opacity 0.2s;
+
+  &.dp-cell-month--visible {
+    opacity: 1;
+  }
+
+  &.dp-cell-month--hidden {
+    opacity: 0;
+  }
+
+  &.dp-cell-month--default {
+    color: var(--_dp-text-muted);
+  }
+
+  &.dp-cell-month--selected {
+    color: var(--_dp-primary-muted);
+  }
+
+  &.dp-cell-month--disabled {
+    color: var(--_dp-text-disabled);
+  }
 }
 
-.dp-cell-month--visible {
-  opacity: 1;
-}
-
-.dp-cell-month--hidden {
-  opacity: 0;
-}
-
-.dp-cell-month--default {
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
-}
-
-.dp-cell-month--selected {
-  color: var(--dp-primary-muted, oklch(0.882 0.059 254.13));
-}
-
-.dp-cell-month--disabled {
-  color: var(--dp-text-disabled, oklch(0.366 0.014 285.79));
-}
-
-/* Day number */
 .dp-cell-day {
   font-size: 1em;
   line-height: 1;
@@ -293,16 +311,16 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.1s;
-}
 
-.dp-month-overlay--visible {
-  opacity: 1;
+  &.dp-month-overlay--visible {
+    opacity: 1;
+  }
 }
 
 .dp-month-overlay-text {
   font-size: 1.7em;
   font-weight: 600;
-  color: oklch(from var(--dp-text-secondary, oklch(0.788 0.01 286.18)) l c h / 0.8);
+  color: var(--_dp-text-secondary-80);
 }
 
 /* ============================================
@@ -318,7 +336,7 @@
   padding-block: 2rem;
   font-size: 0.875rem;
   text-align: center;
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
+  color: var(--_dp-text-muted);
 }
 
 .dp-search-item {
@@ -328,49 +346,45 @@
   padding-block: 0.5rem;
   padding-inline: 0.75rem;
   border: none;
-  border-radius: 0.375rem;
+  border-radius: var(--_dp-radius);
   background: transparent;
   font-family: inherit;
   font-size: 0.875rem;
   text-align: start;
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color var(--_dp-transition), color var(--_dp-transition);
+
+  &.dp-search-item--default {
+    color: var(--_dp-text-secondary);
+
+    &:hover {
+      background: var(--_dp-elevated);
+    }
+  }
+
+  &.dp-search-item--selected {
+    background: var(--_dp-primary);
+    color: var(--_dp-primary-fg);
+  }
+
+  &.dp-search-item--disabled {
+    color: var(--_dp-text-disabled);
+    cursor: not-allowed;
+  }
 }
 
-/* Default state */
-.dp-search-item--default {
-  color: var(--dp-text-secondary, oklch(0.788 0.01 286.18));
-}
-
-.dp-search-item--default:hover {
-  background: var(--dp-elevated, oklch(0.274 0.006 286.03));
-}
-
-/* Selected */
-.dp-search-item--selected {
-  background: var(--dp-primary, oklch(0.546 0.245 262.88));
-  color: var(--dp-primary-fg, oklch(1 0 0));
-}
-
-/* Disabled */
-.dp-search-item--disabled {
-  color: var(--dp-text-disabled, oklch(0.366 0.014 285.79));
-  cursor: not-allowed;
-}
-
-/* Secondary text in search item */
 .dp-search-item-secondary {
   font-size: 0.75rem;
-}
 
-.dp-search-item-secondary--default {
-  color: var(--dp-text-muted, oklch(0.553 0.016 285.94));
-}
+  &.dp-search-item-secondary--default {
+    color: var(--_dp-text-muted);
+  }
 
-.dp-search-item-secondary--selected {
-  color: var(--dp-primary-muted, oklch(0.882 0.059 254.13));
-}
+  &.dp-search-item-secondary--selected {
+    color: var(--_dp-primary-muted);
+  }
 
-.dp-search-item-secondary--disabled {
-  color: var(--dp-text-disabled, oklch(0.366 0.014 285.79));
+  &.dp-search-item-secondary--disabled {
+    color: var(--_dp-text-disabled);
+  }
 }
