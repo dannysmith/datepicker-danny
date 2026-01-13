@@ -9,6 +9,32 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+    </svg>
+  );
+}
+
+function NpmIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M0 7.334v8h6.666v1.332H12v-1.332h12v-8H0zm6.666 6.664H5.334v-4H3.999v4H1.335V8.667h5.331v5.331zm4 0v1.336H8.001V8.667h5.334v5.332h-2.669v-.001zm12.001 0h-1.33v-4h-1.336v4h-1.335v-4h-1.33v4h-2.671V8.667h8.002v5.331zM10.665 10H12v2.667h-1.335V10z" />
+    </svg>
+  );
+}
+
 function CalendarIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -41,13 +67,34 @@ function HeroSection() {
 
   return (
     <section className="flex flex-col items-center gap-8 py-16">
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-4">
         <h1 className="text-4xl font-semibold tracking-tight text-zinc-100">
-          Danny's DatePicker
+          @dannysmith/datepicker
         </h1>
-        <p className="text-zinc-400">
-          React Datepicker with natural language input, infinite scroll and decent keyboard navigation. Built by <a href="https://danny.is" className="text-blue-600 hover:underline">Danny Smith</a>.
+        <p className="text-zinc-400 max-w-lg">
+          A React date picker with natural language input, infinite scroll, and keyboard navigation.
         </p>
+        <div className="flex items-center justify-center gap-4">
+          <a
+            href="https://www.npmjs.com/package/@dannysmith/datepicker"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+          >
+            <NpmIcon className="size-5" />
+            <span>npm</span>
+          </a>
+          <span className="text-zinc-700">|</span>
+          <a
+            href="https://github.com/dannysmith/datepicker-danny"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+          >
+            <GitHubIcon className="size-4" />
+            <span>GitHub</span>
+          </a>
+        </div>
       </div>
 
       <div className="flex flex-col items-center gap-3">
@@ -73,6 +120,38 @@ function HeroSection() {
           Type "tomorrow", "next friday", or "in 2 weeks"
         </p>
       </div>
+    </section>
+  );
+}
+
+// Install section
+function InstallSection() {
+  const [copied, setCopied] = useState(false);
+  const command = "npm install @dannysmith/datepicker";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(command);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <section className="py-12">
+      <h2 className="text-lg font-medium text-zinc-300 mb-4">Install</h2>
+      <button
+        onClick={handleCopy}
+        className="w-full group bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-lg px-4 py-3 text-left transition-colors"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <code className="text-sm font-mono text-zinc-300">{command}</code>
+          <span className="text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors shrink-0">
+            {copied ? "Copied!" : "Click to copy"}
+          </span>
+        </div>
+      </button>
+      <p className="mt-3 text-xs text-zinc-600">
+        Or use <code className="text-zinc-500">pnpm add</code> / <code className="text-zinc-500">bun add</code>
+      </p>
     </section>
   );
 }
@@ -340,10 +419,17 @@ function CSSVariablesSection() {
 }
 
 export function App() {
+  // Scroll to top on mount (prevents auto-focus from scrolling page down)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="mx-auto max-w-3xl px-6">
         <HeroSection />
+        <hr className="border-zinc-800" />
+        <InstallSection />
         <hr className="border-zinc-800" />
         <CodeSection />
         <hr className="border-zinc-800" />
@@ -356,7 +442,11 @@ export function App() {
         <CSSVariablesSection />
 
         <footer className="py-8 text-center text-xs text-zinc-600">
-          Built with React, date-fns, chrono-node, and @tanstack/react-virtual
+          Built by{" "}
+          <a href="https://danny.is" className="text-zinc-500 hover:text-zinc-400 transition-colors">
+            Danny Smith
+          </a>
+          {" "}with React, date-fns, chrono-node, and @tanstack/react-virtual
         </footer>
       </div>
     </div>
