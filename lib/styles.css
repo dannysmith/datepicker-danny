@@ -388,3 +388,34 @@
     color: var(--_dp-text-disabled);
   }
 }
+
+/* ============================================
+   Clear Date Button
+   ============================================ */
+
+.dp-clear-date-btn {
+  display: block;
+  inline-size: 100%;
+  margin-block-start: 0.75rem;
+  padding-block: 0.25rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--_dp-border);
+  border-radius: var(--_dp-radius);
+  background: var(--_dp-elevated);
+  color: var(--_dp-text-secondary);
+  font-family: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color var(--_dp-transition), color var(--_dp-transition);
+
+  &:hover {
+    background: var(--_dp-elevated-50);
+    color: var(--_dp-text);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--_dp-ring);
+    box-shadow: 0 0 0 1px var(--_dp-ring);
+  }
+}

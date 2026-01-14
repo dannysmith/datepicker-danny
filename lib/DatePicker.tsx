@@ -13,6 +13,7 @@ export function DatePicker({
   minDate,
   maxDate,
   placeholder = "When",
+  showClearButton = false,
 }: DatePickerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
     normalizeDate(value || getToday())
@@ -98,10 +99,18 @@ export function DatePicker({
     [query, selectedDate, handleDateSelect, minDate, maxDate]
   );
 
-  const handleClear = useCallback(() => {
+  const handleClearSearch = useCallback(() => {
     setQuery("");
     inputRef.current?.focus();
   }, []);
+
+  const handleClearDate = useCallback(() => {
+    setSelectedDate(getToday());
+    onChange?.(null);
+    onCommit?.(null);
+    setQuery("");
+    inputRef.current?.focus();
+  }, [onChange, onCommit]);
 
   const isSearchMode = query.length > 0;
 
@@ -136,7 +145,7 @@ export function DatePicker({
         {query && (
           <button
             type="button"
-            onClick={handleClear}
+            onClick={handleClearSearch}
             aria-label="Clear search"
             className="dp-clear-btn"
           >
@@ -176,6 +185,17 @@ export function DatePicker({
           onDateChange={handleDateChange}
           onDateSelect={handleDateSelect}
         />
+      )}
+
+      {/* Clear date button */}
+      {showClearButton && (
+        <button
+          type="button"
+          onClick={handleClearDate}
+          className="dp-clear-date-btn"
+        >
+          Clear
+        </button>
       )}
     </div>
   );

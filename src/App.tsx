@@ -57,10 +57,10 @@ function CalendarIcon({ className }: { className?: string }) {
 
 // Hero section with popover demo
 function HeroSection() {
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | null>(new Date());
   const [open, setOpen] = useState(false);
 
-  const handleCommit = (newDate: Date) => {
+  const handleCommit = (newDate: Date | null) => {
     setDate(newDate);
     setOpen(false);
   };
@@ -104,7 +104,7 @@ function HeroSection() {
             render={
               <Button className="gap-2 text-base h-11 px-5 bg-blue-600 hover:bg-blue-700 text-white">
                 <CalendarIcon className="size-5" />
-                <span>{format(date, "d MMM")}</span>
+                <span>{date ? format(date, "d MMM") : "Select date"}</span>
               </Button>
             }
           />
@@ -113,6 +113,7 @@ function HeroSection() {
               value={date}
               onCommit={handleCommit}
               placeholder="Select date"
+              showClearButton
             />
           </PopoverContent>
         </Popover>
@@ -202,6 +203,10 @@ function ResizableSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
 
+  const handleDateChange = (newDate: Date | null) => {
+    if (newDate) setDate(newDate);
+  };
+
   // Min: datepicker 200px + container padding (p-4 = 16px × 2 = 32px) = 232px
   const minWidth = 232;
 
@@ -249,7 +254,7 @@ function ResizableSection() {
         >
           <DatePicker
             value={date}
-            onChange={setDate}
+            onChange={handleDateChange}
             placeholder="Select date"
           />
 
@@ -277,6 +282,10 @@ function ConstraintsSection() {
   const [pastDate, setPastDate] = useState<Date>(today);
   const [windowDate, setWindowDate] = useState<Date>(today);
 
+  const handleFutureDateChange = (d: Date | null) => { if (d) setFutureDate(d); };
+  const handlePastDateChange = (d: Date | null) => { if (d) setPastDate(d); };
+  const handleWindowDateChange = (d: Date | null) => { if (d) setWindowDate(d); };
+
   return (
     <section className="py-12">
       <h2 className="text-lg font-medium text-zinc-300 mb-2">Date constraints</h2>
@@ -292,7 +301,7 @@ function ConstraintsSection() {
           </div>
           <DatePicker
             value={futureDate}
-            onChange={setFutureDate}
+            onChange={handleFutureDateChange}
             minDate={today}
             placeholder="Select future date"
           />
@@ -305,7 +314,7 @@ function ConstraintsSection() {
           </div>
           <DatePicker
             value={pastDate}
-            onChange={setPastDate}
+            onChange={handlePastDateChange}
             maxDate={today}
             placeholder="Select past date"
           />
@@ -318,7 +327,7 @@ function ConstraintsSection() {
           </div>
           <DatePicker
             value={windowDate}
-            onChange={setWindowDate}
+            onChange={handleWindowDateChange}
             minDate={today}
             maxDate={weekFromNow}
             placeholder="Select within window"
@@ -332,12 +341,13 @@ function ConstraintsSection() {
 // Props documentation
 function PropsSection() {
   const props = [
-    { name: "value", type: "Date", required: false, description: "The currently selected date. Defaults to today." },
-    { name: "onChange", type: "(date: Date) => void", required: false, description: "Callback fired on any date change, including keyboard navigation." },
-    { name: "onCommit", type: "(date: Date) => void", required: false, description: "Callback fired only on explicit selection (click or Enter). Useful for popovers." },
+    { name: "value", type: "Date | null", required: false, description: "The currently selected date. Defaults to today. Pass null for no selection." },
+    { name: "onChange", type: "(date: Date | null) => void", required: false, description: "Callback fired on any date change, including keyboard navigation. Receives null when cleared." },
+    { name: "onCommit", type: "(date: Date | null) => void", required: false, description: "Callback fired only on explicit selection (click or Enter). Useful for popovers. Receives null when cleared." },
     { name: "minDate", type: "Date", required: false, description: "Minimum selectable date. Earlier dates are disabled." },
     { name: "maxDate", type: "Date", required: false, description: "Maximum selectable date. Later dates are disabled." },
     { name: "placeholder", type: "string", required: false, description: "Placeholder text for the search input. Defaults to \"When\"." },
+    { name: "showClearButton", type: "boolean", required: false, description: "Show a clear button below the calendar to reset the date selection." },
   ];
 
   return (
