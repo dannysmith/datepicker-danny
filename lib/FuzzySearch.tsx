@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import * as chrono from "chrono-node";
 import {
   format,
@@ -93,10 +93,11 @@ export function FuzzySearchResults({
   onSelectionChange,
 }: FuzzySearchResultsProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [prevQuery, setPrevQuery] = useState(query);
   const results = useMemo(() => parseInput(query), [query]);
 
   // Find next/prev enabled index for keyboard navigation
-  const findNextEnabledIndex = (current: number, direction: 1 | -1): number => {
+  const findNextEnabledIndex = useCallback((current: number, direction: 1 | -1): number => {
     let next = current + direction;
     while (next >= 0 && next < results.length) {
       if (!isDateDisabled(results[next].date, minDate, maxDate)) {
@@ -105,16 +106,16 @@ export function FuzzySearchResults({
       next += direction;
     }
     return current; // Stay at current if no enabled found
-  };
+  }, [results, minDate, maxDate]);
 
-  // Reset selection to first enabled result when results change
-  useEffect(() => {
+  // Reset selection to first enabled result when query changes (in render, not effect)
+  if (query !== prevQuery) {
+    setPrevQuery(query);
     const firstEnabled = results.findIndex(
       (r) => !isDateDisabled(r.date, minDate, maxDate)
     );
-    const newIndex = firstEnabled >= 0 ? firstEnabled : 0;
-    setSelectedIndex(newIndex);
-  }, [results, minDate, maxDate]);
+    setSelectedIndex(firstEnabled >= 0 ? firstEnabled : 0);
+  }
 
   // Notify parent of selection changes (for aria-activedescendant)
   // Using a separate effect to avoid re-running the reset logic
@@ -145,7 +146,7 @@ export function FuzzySearchResults({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [results, selectedIndex, minDate, maxDate, onDateSelect]);
+  }, [results, selectedIndex, minDate, maxDate, onDateSelect, findNextEnabledIndex]);
 
   if (results.length === 0) {
     return (
