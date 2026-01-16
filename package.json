@@ -1,6 +1,6 @@
 {
   "name": "@dannysmith/datepicker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "React date picker with natural language input and infinite scroll",
   "type": "module",
   "main": "./dist-lib/index.cjs",
