@@ -7,7 +7,7 @@ import {
   getInitialWeekIndex,
   weekIndexToDate,
   dateToWeekIndex,
-  formatMonthFull,
+  formatMonthOverlay,
   getToday,
   isDateDisabled,
   WEEKDAY_HEADERS,
@@ -114,7 +114,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     const middleWeek = virtualItems[middleIndex];
     if (middleWeek) {
       const date = weekIndexToDate(middleWeek.index);
-      setVisibleMonth(formatMonthFull(date));
+      setVisibleMonth(formatMonthOverlay(date));
     }
   }, [rowVirtualizer]);
 
@@ -156,7 +156,7 @@ export const CalendarGrid = forwardRef<CalendarGridHandle, CalendarGridProps>(fu
     if (!initialScrollDone.current) {
       const weekIndex = dateToWeekIndex(selectedDate);
       rowVirtualizer.scrollToIndex(weekIndex, { align: "center" });
-      setVisibleMonth(formatMonthFull(selectedDate));
+      setVisibleMonth(formatMonthOverlay(selectedDate));
       // Mark initial scroll as done after a delay to allow scroll events to settle
       setTimeout(() => {
         initialScrollDone.current = true;

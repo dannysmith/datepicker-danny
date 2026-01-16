@@ -5,6 +5,7 @@ import {
   isSameDay,
   isSameMonth,
   getDate,
+  getYear,
   format,
   startOfDay,
 } from "date-fns";
@@ -87,6 +88,21 @@ export function formatMonthAbbr(date: Date): string {
  */
 export function formatMonthFull(date: Date): string {
   return format(date, "MMMM");
+}
+
+/**
+ * Format month for overlay display.
+ * Shows just the month for current year (e.g., "April"),
+ * or month with abbreviated year for other years (e.g., "April 25")
+ */
+export function formatMonthOverlay(date: Date): string {
+  const currentYear = getYear(new Date());
+  const dateYear = getYear(date);
+
+  if (dateYear === currentYear) {
+    return format(date, "MMMM");
+  }
+  return format(date, "MMMM yy");
 }
 
 /**
