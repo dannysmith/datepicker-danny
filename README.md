@@ -1,16 +1,17 @@
 # @dannysmith/datepicker
 
-A React date picker component with natural language input and infinite scroll.
+A React date picker component with natural language input and infinite scroll. Designed primarily for use in datepicker popovers, but will work elsewhere too.
 
-[Demo](https://dannysmith.github.io/datepicker-danny)
+[Live Demo](https://dannysmith.github.io/datepicker-danny)
+
+![datepickerdemo](https://github.com/user-attachments/assets/a50397cc-d9d3-4d62-9e55-aac3d6a415ee)
+
 
 ## Features
 
-- **Fuzzy search**: Type natural language like "tomorrow", "next friday", "in 3 weeks", or "3 months" and get instant suggestions
-- **Partial matching**: Incomplete input like "3 mont" or "next we" expands to valid dates
-- **Typo tolerance**: Minor typos like "tomorow" or "3 moths" are handled gracefully
-- **Infinite scroll**: Scroll through dates with virtualized rendering for smooth performance
 - **Keyboard navigation**: Full keyboard support with arrow keys, Page Up/Down, Home, and Enter
+- **Infinite scroll**: Scroll through calendar months infinitely into the past or future.
+- **Fuzzy natural language search**: Type natural language like "tomorrow", "next friday", "in 3 weeks", or "3 months" and get instant suggestions. Handles common typos and incomplete input like "3 mont" or "next we" as you type.
 - **Min/max dates**: Optionally constrain selectable dates to a range
 - **Customizable colors**: Theme via CSS variables to match your app's design
 
@@ -37,9 +38,11 @@ function App() {
     <DatePicker
       value={date}
       onChange={setDate}
+      onCommit={setDate}
       placeholder="When"
       minDate={new Date()}  // optional
       maxDate={someDate}    // optional
+      showClearButton=true  // optional
     />
   );
 }
