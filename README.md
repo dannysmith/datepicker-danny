@@ -27,26 +27,81 @@ bun add @dannysmith/datepicker
 
 ## Usage
 
+### Basic Usage
+
 ```tsx
+import { useState } from 'react';
 import { DatePicker } from '@dannysmith/datepicker';
 import '@dannysmith/datepicker/styles.css';
 
 function App() {
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date | null>(new Date());
 
   return (
     <DatePicker
       value={date}
       onChange={setDate}
-      onCommit={setDate}
-      placeholder="When"
-      minDate={new Date()}  // optional
-      maxDate={someDate}    // optional
-      showClearButton=true  // optional
+      placeholder="Select date"
     />
   );
 }
 ```
+
+### Usage in a Popover
+
+The `onCommit` callback fires only on explicit selection (click or Enter), making it ideal for closing popovers:
+
+```tsx
+import { useState } from 'react';
+import { format } from 'date-fns';
+import { DatePicker } from '@dannysmith/datepicker';
+import '@dannysmith/datepicker/styles.css';
+// Use your preferred popover component (Radix, Headless UI, etc.)
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
+
+function DatePickerButton() {
+  const [date, setDate] = useState<Date | null>(new Date());
+  const [open, setOpen] = useState(false);
+
+  const handleCommit = (newDate: Date | null) => {
+    setDate(newDate);
+    setOpen(false); // Close popover on selection
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger>
+        <button>{date ? format(date, 'd MMM yyyy') : 'Select date'}</button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <DatePicker
+          value={date}
+          onCommit={handleCommit}
+          showClearButton
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `value` | `Date \| null` | `new Date()` | The currently selected date. Pass `null` to indicate no selection. Defaults to today if not provided. |
+| `onChange` | `(date: Date \| null) => void` | — | Called on any date change, including keyboard navigation. Use this to track the current selection as the user navigates. Receives `null` when cleared. |
+| `onCommit` | `(date: Date \| null) => void` | — | Called only when the user explicitly selects a date (click or Enter). Use this to close popovers or trigger form submission. Receives `null` when cleared. |
+| `minDate` | `Date` | — | Minimum selectable date. Earlier dates are visually disabled and cannot be selected. |
+| `maxDate` | `Date` | — | Maximum selectable date. Later dates are visually disabled and cannot be selected. |
+| `placeholder` | `string` | `"When"` | Placeholder text for the search input field. |
+| `showClearButton` | `boolean` | `false` | When `true`, displays a "Clear" button below the calendar that resets the selection (calls both `onChange` and `onCommit` with `null`). |
+
+### Understanding `onChange` vs `onCommit`
+
+- **`onChange`**: Fires on every date change, including arrow key navigation. Use this when you want to preview the date as the user navigates, or when you don't need to distinguish between browsing and final selection.
+
+- **`onCommit`**: Fires only on explicit selection—when the user clicks a date or presses Enter. This is the callback you typically want for popovers, where you want to close the popover only after the user has made a deliberate choice.
 
 ## Keyboard Shortcuts
 
