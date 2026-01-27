@@ -14,6 +14,7 @@ export function DatePicker({
   maxDate,
   placeholder = "When",
   showClearButton = false,
+  autoFocus = true,
 }: DatePickerProps) {
   const [selectedDate, setSelectedDate] = useState<Date>(() =>
     normalizeDate(value || getToday())
@@ -23,10 +24,12 @@ export function DatePicker({
   const inputRef = useRef<HTMLInputElement>(null);
   const calendarRef = useRef<CalendarGridHandle>(null);
 
-  // Keep input focused
+  // Focus input on mount if autoFocus is enabled
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (autoFocus) {
+      inputRef.current?.focus();
+    }
+  }, [autoFocus]);
 
   // Called on keyboard navigation - updates selection but doesn't commit
   const handleDateChange = useCallback(

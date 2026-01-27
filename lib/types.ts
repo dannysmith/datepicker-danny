@@ -13,4 +13,6 @@ export interface DatePickerProps {
   placeholder?: string;
   /** Optional: Show a clear button below the calendar to reset the date selection */
   showClearButton?: boolean;
+  /** Optional: Automatically focus the input on mount. Defaults to true. */
+  autoFocus?: boolean;
 }

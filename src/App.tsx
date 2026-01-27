@@ -256,6 +256,7 @@ function ResizableSection() {
             value={date}
             onChange={handleDateChange}
             placeholder="Select date"
+            autoFocus={false}
           />
 
           {/* Resize handle */}
@@ -304,6 +305,7 @@ function ConstraintsSection() {
             onChange={handleFutureDateChange}
             minDate={today}
             placeholder="Select future date"
+            autoFocus={false}
           />
         </div>
 
@@ -317,6 +319,7 @@ function ConstraintsSection() {
             onChange={handlePastDateChange}
             maxDate={today}
             placeholder="Select past date"
+            autoFocus={false}
           />
         </div>
 
@@ -331,6 +334,7 @@ function ConstraintsSection() {
             minDate={today}
             maxDate={weekFromNow}
             placeholder="Select within window"
+            autoFocus={false}
           />
         </div>
       </div>
@@ -348,6 +352,7 @@ function PropsSection() {
     { name: "maxDate", type: "Date", required: false, description: "Maximum selectable date. Later dates are disabled." },
     { name: "placeholder", type: "string", required: false, description: "Placeholder text for the search input. Defaults to \"When\"." },
     { name: "showClearButton", type: "boolean", required: false, description: "Show a clear button below the calendar to reset the date selection." },
+    { name: "autoFocus", type: "boolean", required: false, description: "Automatically focus the input on mount. Defaults to true. Set to false when rendering multiple pickers on a page." },
   ];
 
   return (

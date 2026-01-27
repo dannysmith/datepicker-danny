@@ -96,6 +96,7 @@ function DatePickerButton() {
 | `maxDate` | `Date` | — | Maximum selectable date. Later dates are visually disabled and cannot be selected. |
 | `placeholder` | `string` | `"When"` | Placeholder text for the search input field. |
 | `showClearButton` | `boolean` | `false` | When `true`, displays a "Clear" button below the calendar that resets the selection (calls both `onChange` and `onCommit` with `null`). |
+| `autoFocus` | `boolean` | `true` | Automatically focus the input on mount. Set to `false` when rendering multiple date pickers on a page to prevent focus conflicts. |
 
 ### Understanding `onChange` vs `onCommit`
 
